@@ -4,7 +4,6 @@ import com.insight.util.pojo.Reply;
 import com.insight.util.pojo.SearchDTO;
 import com.insight.util.service.BaseController;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -18,9 +17,13 @@ import org.springframework.web.bind.annotation.*;
 public class TenantController extends BaseController {
     private final TenantService service;
 
+    /**
+     * 构造方法
+     *
+     * @param service 自动注入的TenantService
+     */
     @Autowired
-    public TenantController(StringRedisTemplate redis, TenantService service) {
-        super.setRedis(redis);
+    public TenantController(TenantService service) {
         this.service = service;
     }
 

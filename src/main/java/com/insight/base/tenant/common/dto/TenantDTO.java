@@ -2,6 +2,7 @@ package com.insight.base.tenant.common.dto;
 
 import com.insight.base.tenant.common.entity.CompanyInfo;
 import com.insight.util.Json;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -10,7 +11,7 @@ import java.util.Date;
  * @date 2019/05/20
  * @remark 租户查询对象实体
  */
-public class TenantDTO  implements Serializable {
+public class TenantDTO implements Serializable {
     private static final long serialVersionUID = -1L;
 
     /**
@@ -170,7 +171,7 @@ public class TenantDTO  implements Serializable {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return Json.toJson(this);
     }
 }

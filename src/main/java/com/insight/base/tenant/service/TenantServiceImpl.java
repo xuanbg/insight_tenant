@@ -15,7 +15,8 @@ import java.util.List;
  * @remark 租户服务接口实现类
  */
 @Service
-public class TenantServiceImpl implements TenantService{
+public class TenantServiceImpl implements TenantService {
+
     /**
      * 根据设定的条件查询租户信息(分页)
      *
