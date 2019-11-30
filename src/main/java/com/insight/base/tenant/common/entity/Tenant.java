@@ -1,6 +1,7 @@
 package com.insight.base.tenant.common.entity;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * @author 宣炳刚
@@ -42,7 +43,7 @@ public class Tenant {
     /**
      * 过期日期
      */
-    private Date expireDate;
+    private LocalDate expireDate;
 
     /**
      * 租户状态：0、待审核；1、已通过；2、未通过
@@ -52,7 +53,7 @@ public class Tenant {
     /**
      * 是否失效：0、正常；1、失效
      */
-    private Boolean invalid;
+    private Boolean isInvalid;
 
     /**
      * 审核人
@@ -67,7 +68,7 @@ public class Tenant {
     /**
      * 审核时间
      */
-    private Date auditedTime;
+    private LocalDateTime auditedTime;
 
     /**
      * 创建人
@@ -82,7 +83,7 @@ public class Tenant {
     /**
      * 创建时间
      */
-    private Date createdTime;
+    private LocalDateTime createdTime;
 
     public String getId() {
         return id;
@@ -132,11 +133,11 @@ public class Tenant {
         this.remark = remark;
     }
 
-    public Date getExpireDate() {
+    public LocalDate getExpireDate() {
         return expireDate;
     }
 
-    public void setExpireDate(Date expireDate) {
+    public void setExpireDate(LocalDate expireDate) {
         this.expireDate = expireDate;
     }
 
@@ -149,11 +150,11 @@ public class Tenant {
     }
 
     public Boolean getInvalid() {
-        return invalid;
+        return isInvalid;
     }
 
     public void setInvalid(Boolean invalid) {
-        this.invalid = invalid;
+        this.isInvalid = invalid;
     }
 
     public String getAuditor() {
@@ -172,11 +173,11 @@ public class Tenant {
         this.auditorId = auditorId;
     }
 
-    public Date getAuditedTime() {
+    public LocalDateTime getAuditedTime() {
         return auditedTime;
     }
 
-    public void setAuditedTime(Date auditedTime) {
+    public void setAuditedTime(LocalDateTime auditedTime) {
         this.auditedTime = auditedTime;
     }
 
@@ -196,11 +197,11 @@ public class Tenant {
         this.creatorId = creatorId;
     }
 
-    public Date getCreatedTime() {
+    public LocalDateTime getCreatedTime() {
         return createdTime;
     }
 
-    public void setCreatedTime(Date createdTime) {
+    public void setCreatedTime(LocalDateTime createdTime) {
         this.createdTime = createdTime;
     }
 }
