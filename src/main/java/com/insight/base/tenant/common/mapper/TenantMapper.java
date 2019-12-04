@@ -1,5 +1,6 @@
 package com.insight.base.tenant.common.mapper;
 
+import com.insight.base.tenant.common.dto.AppListDto;
 import com.insight.base.tenant.common.dto.TenantListDto;
 import com.insight.base.tenant.common.entity.CompanyInfo;
 import com.insight.base.tenant.common.entity.Tenant;
@@ -99,6 +100,37 @@ public interface TenantMapper {
      */
     @Update("update ibt_tenant set is_invalid = #{status} where id = #{id};")
     void changeTenantStatus(@Param("id") String id, @Param("status") boolean status);
+
+    /**
+     * 获取租户绑定的应用集合
+     *
+     * @param id 租户ID
+     * @return 租户绑定的应用集合
+     */
+    @Select("select a.id, a.name, a.icon, a.domain from ibt_tenant_app r join ibs_application a on a.id = r.app_id where r.tenant_id = #{id};")
+    List<AppListDto> getTenantApps(String id);
+
+    /**
+     * 设置应用与指定ID的租户的绑定关系
+     *
+     * @param id     租户ID
+     * @param appIds 应用ID集合
+     */
+    @Insert("<script>insert ibt_tenant_app (`id`, `tenant_id`, `app_id`) values " +
+            "<foreach collection = \"list\" item = \"item\" index = \"index\" separator = \",\">" +
+            "(replace(uuid(), '-', ''), #{id}, #{item})</foreach>;</script>")
+    void addAppsToTenant(@Param("id") String id, @Param("list") List<String> appIds);
+
+    /**
+     * 解除应用与指定ID的租户的绑定关系
+     *
+     * @param id     租户ID
+     * @param appIds 应用ID集合
+     */
+    @Delete("<script>delete from ibt_tenant_app where tenant_id = #{id} and app_id in " +
+            "(<foreach collection = \"list\" item = \"item\" index = \"index\" separator = \",\">" +
+            "#{item}</foreach>);</script>")
+    void removeAppsFromTenant(@Param("id") String id, @Param("list") List<String> appIds);
 
     /**
      * 获取操作日志列表

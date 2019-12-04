@@ -87,6 +87,14 @@ public interface TenantService {
     Reply deleteTenant(LoginInfo info, String id);
 
     /**
+     * 查询指定ID的租户绑定的应用集合
+     *
+     * @param id 租户ID
+     * @return Reply
+     */
+    Reply getTenantApps(String id);
+
+    /**
      * 设置应用与指定ID的租户的绑定关系
      *
      * @param info   用户信息
@@ -97,13 +105,14 @@ public interface TenantService {
     Reply addAppsToTenant(LoginInfo info, String id, List<String> appIds);
 
     /**
-     * 查询指定ID的租户绑定的应用集合
+     * 解除应用与指定ID的租户的绑定关系
      *
-     * @param id 租户ID
+     * @param info   用户信息
+     * @param id     租户ID
+     * @param appIds 应用ID集合
      * @return Reply
      */
-    Reply getTenantApps(String id);
-
+    Reply removeAppsFromTenant(LoginInfo info, String id, List<String> appIds);
 
     /**
      * 获取日志列表

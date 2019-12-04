@@ -3,6 +3,7 @@ package com.insight.base.tenant.manage;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.insight.base.tenant.common.Core;
+import com.insight.base.tenant.common.dto.AppListDto;
 import com.insight.base.tenant.common.dto.TenantListDto;
 import com.insight.base.tenant.common.entity.Tenant;
 import com.insight.base.tenant.common.mapper.TenantMapper;
@@ -214,6 +215,19 @@ public class TenantServiceImpl implements TenantService {
     }
 
     /**
+     * 查询指定ID的租户绑定的应用集合
+     *
+     * @param id 租户ID
+     * @return Reply
+     */
+    @Override
+    public Reply getTenantApps(String id) {
+        List<AppListDto> list = mapper.getTenantApps(id);
+
+        return ReplyHelper.success(list);
+    }
+
+    /**
      * 设置应用与指定ID的租户的绑定关系
      *
      * @param info   用户关键信息
@@ -223,18 +237,36 @@ public class TenantServiceImpl implements TenantService {
      */
     @Override
     public Reply addAppsToTenant(LoginInfo info, String id, List<String> appIds) {
-        return null;
+        Tenant tenant = mapper.getTenant(id);
+        if (tenant == null) {
+            return ReplyHelper.fail("ID不存在,未更新数据");
+        }
+
+        mapper.addAppsToTenant(id, appIds);
+        core.writeLog(info, OperateType.INSERT, "租户管理", id, appIds);
+
+        return ReplyHelper.success();
     }
 
     /**
-     * 查询指定ID的租户绑定的应用集合
+     * 解除应用与指定ID的租户的绑定关系
      *
-     * @param id 租户ID
+     * @param info   用户信息
+     * @param id     租户ID
+     * @param appIds 应用ID集合
      * @return Reply
      */
     @Override
-    public Reply getTenantApps(String id) {
-        return null;
+    public Reply removeAppsFromTenant(LoginInfo info, String id, List<String> appIds) {
+        Tenant tenant = mapper.getTenant(id);
+        if (tenant == null) {
+            return ReplyHelper.fail("ID不存在,未更新数据");
+        }
+
+        mapper.removeAppsFromTenant(id, appIds);
+        core.writeLog(info, OperateType.DELETE, "租户管理", id, appIds);
+
+        return ReplyHelper.success();
     }
 
     /**

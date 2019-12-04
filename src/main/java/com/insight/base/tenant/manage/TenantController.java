@@ -154,21 +154,6 @@ public class TenantController {
     }
 
     /**
-     * 设置应用与指定ID的租户的绑定关系
-     *
-     * @param info   用户关键信息
-     * @param id     租户ID
-     * @param appIds 应用ID集合
-     * @return Reply
-     */
-    @PostMapping("/v1.0/tenants/apps")
-    public Reply addAppsToTenant(@RequestHeader("loginInfo") String info, String id, List<String> appIds) {
-        LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
-
-        return service.addAppsToTenant(loginInfo, id, appIds);
-    }
-
-    /**
      * 查询指定ID的租户绑定的应用集合
      *
      * @param id 租户ID
@@ -177,6 +162,42 @@ public class TenantController {
     @GetMapping("/v1.0/tenants/{id}/apps")
     public Reply getTenantApps(@PathVariable String id) {
         return service.getTenantApps(id);
+    }
+
+    /**
+     * 设置应用与指定ID的租户的绑定关系
+     *
+     * @param info   用户关键信息
+     * @param id     租户ID
+     * @param appIds 应用ID集合
+     * @return Reply
+     */
+    @PostMapping("/v1.0/tenants/{id}/apps")
+    public Reply addAppsToTenant(@RequestHeader("loginInfo") String info, @PathVariable String id, @RequestBody List<String> appIds) {
+        if (appIds == null || appIds.isEmpty()){
+            return ReplyHelper.invalidParam("请选择需要绑定的应用");
+        }
+
+        LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
+        return service.addAppsToTenant(loginInfo, id, appIds);
+    }
+
+    /**
+     * 移除应用与指定ID的租户的绑定关系
+     *
+     * @param info   用户关键信息
+     * @param id     租户ID
+     * @param appIds 应用ID集合
+     * @return Reply
+     */
+    @DeleteMapping("/v1.0/tenants/{id}/apps")
+    public Reply removeAppsFromTenant(@RequestHeader("loginInfo") String info, @PathVariable String id, @RequestBody List<String> appIds) {
+        if (appIds == null || appIds.isEmpty()){
+            return ReplyHelper.invalidParam("请选择需要解除绑定的应用");
+        }
+
+        LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
+        return service.removeAppsFromTenant(loginInfo, id, appIds);
     }
 
     /**

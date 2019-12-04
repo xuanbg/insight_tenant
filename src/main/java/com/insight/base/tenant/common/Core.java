@@ -38,7 +38,7 @@ public class Core {
      */
     public String getCode() {
         while (true) {
-            String code = newCode("TI-#5", "Tenant:", false);
+            String code = newCode("TI-#5", "Tenant", false);
             int count = mapper.getTenantCount(code);
             if (count > 0) {
                 continue;
