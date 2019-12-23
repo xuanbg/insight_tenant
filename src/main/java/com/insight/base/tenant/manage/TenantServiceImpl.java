@@ -146,6 +146,9 @@ public class TenantServiceImpl implements TenantService {
 
         mapper.auditTenant(id, status);
         core.writeLog(info, OperateType.UPDATE, "租户管理", id, dto);
+        if (status == 2){
+            return ReplyHelper.success();
+        }
 
         // 关联系统管理客户端应用
         String appId = "e46c0d4f85f24f759ad4d86b9505b1d4";
