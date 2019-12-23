@@ -11,6 +11,7 @@ import com.insight.base.tenant.common.entity.Tenant;
 import com.insight.base.tenant.common.entity.TenantApp;
 import com.insight.base.tenant.common.mapper.TenantMapper;
 import com.insight.util.Generator;
+import com.insight.util.Redis;
 import com.insight.util.ReplyHelper;
 import com.insight.util.Util;
 import com.insight.util.pojo.*;
@@ -184,8 +185,8 @@ public class TenantServiceImpl implements TenantService {
      */
     @Override
     public Reply rentTenant(LoginInfo info, TenantApp dto) {
-        String id = dto.getId();
-        Tenant tenant = mapper.getTenant(id);
+        String tenantId = dto.getTenantId();
+        Tenant tenant = mapper.getTenant(tenantId);
         if (tenant == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
         }
@@ -196,7 +197,13 @@ public class TenantServiceImpl implements TenantService {
         }
 
         mapper.rentTenant(dto);
-        core.writeLog(info, OperateType.UPDATE, "租户管理", id, dto);
+        core.writeLog(info, OperateType.UPDATE, "租户管理", tenantId, dto);
+
+        // 更新缓存数据
+        String key = "App:" + dto.getAppId();
+        if (Redis.hasKey(key)) {
+            Redis.set(key, tenantId, dto.getExpireDate());
+        }
 
         return ReplyHelper.success();
     }
