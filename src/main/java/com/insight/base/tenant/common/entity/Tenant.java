@@ -1,6 +1,8 @@
 package com.insight.base.tenant.common.entity;
 
-import java.time.LocalDate;
+import com.insight.util.Json;
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -8,7 +10,8 @@ import java.time.LocalDateTime;
  * @date 2019/05/20
  * @remark 租户实体类
  */
-public class Tenant {
+public class Tenant implements Serializable {
+    private static final long serialVersionUID = -1L;
 
     /**
      * UUID主键
@@ -39,11 +42,6 @@ public class Tenant {
      * 描述
      */
     private String remark;
-
-    /**
-     * 过期日期
-     */
-    private LocalDate expireDate;
 
     /**
      * 租户状态：0、待审核；1、已通过；2、未通过
@@ -133,14 +131,6 @@ public class Tenant {
         this.remark = remark;
     }
 
-    public LocalDate getExpireDate() {
-        return expireDate;
-    }
-
-    public void setExpireDate(LocalDate expireDate) {
-        this.expireDate = expireDate;
-    }
-
     public Integer getStatus() {
         return status;
     }
@@ -203,5 +193,10 @@ public class Tenant {
 
     public void setCreatedTime(LocalDateTime createdTime) {
         this.createdTime = createdTime;
+    }
+
+    @Override
+    public String toString() {
+        return Json.toJson(this);
     }
 }

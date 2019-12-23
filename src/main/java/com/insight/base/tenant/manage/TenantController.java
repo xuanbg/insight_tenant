@@ -1,6 +1,7 @@
 package com.insight.base.tenant.manage;
 
 import com.insight.base.tenant.common.entity.Tenant;
+import com.insight.base.tenant.common.entity.TenantApp;
 import com.insight.util.Json;
 import com.insight.util.ReplyHelper;
 import com.insight.util.pojo.LoginInfo;
@@ -100,15 +101,15 @@ public class TenantController {
     /**
      * 续租
      *
-     * @param info   用户关键信息
-     * @param tenant 租户实体数据
+     * @param info 用户关键信息
+     * @param dto  租户应用实体数据
      * @return Reply
      */
     @PutMapping("/v1.0/tenants/exp")
-    public Reply rentTenant(@RequestHeader("loginInfo") String info, @RequestBody Tenant tenant) {
+    public Reply rentTenant(@RequestHeader("loginInfo") String info, @RequestBody TenantApp dto) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
-        return service.rentTenant(loginInfo, tenant);
+        return service.rentTenant(loginInfo, dto);
     }
 
     /**
@@ -174,7 +175,7 @@ public class TenantController {
      */
     @PostMapping("/v1.0/tenants/{id}/apps")
     public Reply addAppsToTenant(@RequestHeader("loginInfo") String info, @PathVariable String id, @RequestBody List<String> appIds) {
-        if (appIds == null || appIds.isEmpty()){
+        if (appIds == null || appIds.isEmpty()) {
             return ReplyHelper.invalidParam("请选择需要绑定的应用");
         }
 
@@ -192,7 +193,7 @@ public class TenantController {
      */
     @DeleteMapping("/v1.0/tenants/{id}/apps")
     public Reply removeAppsFromTenant(@RequestHeader("loginInfo") String info, @PathVariable String id, @RequestBody List<String> appIds) {
-        if (appIds == null || appIds.isEmpty()){
+        if (appIds == null || appIds.isEmpty()) {
             return ReplyHelper.invalidParam("请选择需要解除绑定的应用");
         }
 

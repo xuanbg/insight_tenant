@@ -1,6 +1,7 @@
 package com.insight.base.tenant.manage;
 
 import com.insight.base.tenant.common.entity.Tenant;
+import com.insight.base.tenant.common.entity.TenantApp;
 import com.insight.util.pojo.LoginInfo;
 import com.insight.util.pojo.Reply;
 
@@ -62,10 +63,10 @@ public interface TenantService {
      * 续租
      *
      * @param info 用户信息
-     * @param dto  租户实体数据
+     * @param dto  租户应用实体数据
      * @return Reply
      */
-    Reply rentTenant(LoginInfo info, Tenant dto);
+    Reply rentTenant(LoginInfo info, TenantApp dto);
 
     /**
      * 启用、禁用租户信息

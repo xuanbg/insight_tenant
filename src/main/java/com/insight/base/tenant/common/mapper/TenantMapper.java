@@ -4,11 +4,11 @@ import com.insight.base.tenant.common.dto.AppListDto;
 import com.insight.base.tenant.common.dto.TenantListDto;
 import com.insight.base.tenant.common.entity.CompanyInfo;
 import com.insight.base.tenant.common.entity.Tenant;
+import com.insight.base.tenant.common.entity.TenantApp;
 import com.insight.util.common.JsonTypeHandler;
 import com.insight.util.pojo.Log;
 import org.apache.ibatis.annotations.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -54,8 +54,8 @@ public interface TenantMapper {
      *
      * @param tenant 租户DTO
      */
-    @Insert("insert ibt_tenant(id, code, name, alias, company_info, remark, expire_date, creator, creator_id, created_time) values " +
-            "(#{id}, #{code}, #{name}, #{alias}, #{companyInfo, typeHandler = com.insight.util.common.JsonTypeHandler}, #{remark}, #{expireDate}, #{creator}, #{creatorId}, #{createdTime});")
+    @Insert("insert ibt_tenant(id, code, name, alias, company_info, remark, creator, creator_id, created_time) values " +
+            "(#{id}, #{code}, #{name}, #{alias}, #{companyInfo, typeHandler = com.insight.util.common.JsonTypeHandler}, #{remark}, #{creator}, #{creatorId}, #{createdTime});")
     void addTenant(Tenant tenant);
 
     /**
@@ -76,20 +76,24 @@ public interface TenantMapper {
     void auditTenant(@Param("id") String id, @Param("status") int status);
 
     /**
-     * 续租
+     * 应用续租
      *
-     * @param id     租户ID
-     * @param expire 到期日期
+     * @param tenantApp 租户应用DTO
      */
-    @Update("update ibt_tenant set expire_date = #{expire} where id = #{id};")
-    void rentTenant(@Param("id") String id, @Param("expire") LocalDate expire);
+    @Update("update ibt_tenant_app set expire_date = #{expireDate} where tenant_id = #{tenantId} and app_id = #{appId};")
+    void rentTenant(TenantApp tenantApp);
 
     /**
      * 删除租户
      *
      * @param id 租户ID
      */
-    @Delete("delete from ibt_tenant where id = #{id};")
+    @Delete("delete t, a, u, o, om, g, gm, r, rm, f, d from ibt_tenant t " +
+            "left join ibt_tenant_app a on a.tenant_id = t.id left join ibt_tenant_user u on u.tenant_id = t.id " +
+            "left join ibo_organize o on o.tenant_id = t.id left join ibo_organize_member om on om.post_id = o.id " +
+            "left join ibu_group g on g.tenant_id = t.id left join ibu_group_member gm on gm.group_id = g.id " +
+            "left join ibr_role r on r.tenant_id = t.id left join ibr_role_member rm on rm.role_id = r.id " +
+            "left join ibr_role_func_permit f on f.role_id = r.id left join ibr_role_data_permit d on d.role_id = r.id where t.id = #{id};")
     void deleteTenant(String id);
 
     /**
@@ -107,8 +111,20 @@ public interface TenantMapper {
      * @param id 租户ID
      * @return 租户绑定的应用集合
      */
-    @Select("select a.id, a.name, a.icon, a.domain from ibt_tenant_app r join ibs_application a on a.id = r.app_id where r.tenant_id = #{id};")
+    @Select("select a.id, a.name, a.icon, a.domain, r.expire_date from ibt_tenant_app r join ibs_application a on a.id = r.app_id where r.tenant_id = #{id};")
     List<AppListDto> getTenantApps(String id);
+
+    /**
+     * 获取租户绑定应用的角色数量
+     *
+     * @param id     租户ID
+     * @param appIds 应用ID集合
+     * @return 租户绑定应用的角色数量
+     */
+    @Delete("<script>select count(*) from ibr_role where tenant_id = #{id} and app_id in " +
+            "(<foreach collection = \"list\" item = \"item\" index = \"index\" separator = \",\">" +
+            "#{item}</foreach>);</script>")
+    int getAppsRoleCount(@Param("id") String id, @Param("list") List<String> appIds);
 
     /**
      * 设置应用与指定ID的租户的绑定关系
@@ -116,9 +132,9 @@ public interface TenantMapper {
      * @param id     租户ID
      * @param appIds 应用ID集合
      */
-    @Insert("<script>insert ibt_tenant_app (`id`, `tenant_id`, `app_id`) values " +
+    @Insert("<script>insert ibt_tenant_app (`id`, `tenant_id`, `app_id`, expire_date) values " +
             "<foreach collection = \"list\" item = \"item\" index = \"index\" separator = \",\">" +
-            "(replace(uuid(), '-', ''), #{id}, #{item})</foreach>;</script>")
+            "(replace(uuid(), '-', ''), #{id}, #{item}, date_add(curdate(), interval 90 day))</foreach>;</script>")
     void addAppsToTenant(@Param("id") String id, @Param("list") List<String> appIds);
 
     /**
@@ -131,6 +147,15 @@ public interface TenantMapper {
             "(<foreach collection = \"list\" item = \"item\" index = \"index\" separator = \",\">" +
             "#{item}</foreach>);</script>")
     void removeAppsFromTenant(@Param("id") String id, @Param("list") List<String> appIds);
+
+    /**
+     * 新增租户-用户关系
+     *
+     * @param tenantId 租户ID
+     * @param userId   用户ID
+     */
+    @Insert("insert ibt_tenant_user(id, tenant_id, user_id) values (replace(uuid(), '-', ''), #{tenantId}, #{userId});")
+    void addRelation(@Param("tenantId") String tenantId, @Param("userId") String userId);
 
     /**
      * 获取操作日志列表

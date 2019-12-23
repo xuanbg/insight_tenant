@@ -3,21 +3,24 @@ package com.insight.base.tenant.manage;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.insight.base.tenant.common.Core;
+import com.insight.base.tenant.common.client.RabbitClient;
 import com.insight.base.tenant.common.dto.AppListDto;
+import com.insight.base.tenant.common.dto.MemberDto;
 import com.insight.base.tenant.common.dto.TenantListDto;
 import com.insight.base.tenant.common.entity.Tenant;
+import com.insight.base.tenant.common.entity.TenantApp;
 import com.insight.base.tenant.common.mapper.TenantMapper;
+import com.insight.util.Generator;
 import com.insight.util.ReplyHelper;
-import com.insight.util.pojo.Log;
-import com.insight.util.pojo.LoginInfo;
-import com.insight.util.pojo.OperateType;
-import com.insight.util.pojo.Reply;
+import com.insight.util.Util;
+import com.insight.util.pojo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.insight.util.Generator.uuid;
@@ -89,7 +92,6 @@ public class TenantServiceImpl implements TenantService {
         String id = uuid();
         dto.setId(id);
         dto.setCode(core.getCode());
-        dto.setExpireDate(LocalDate.now().plusDays(90));
         dto.setCreator(info.getUserName());
         dto.setCreatorId(info.getUserId());
         dto.setCreatedTime(LocalDateTime.now());
@@ -144,6 +146,32 @@ public class TenantServiceImpl implements TenantService {
         mapper.auditTenant(id, status);
         core.writeLog(info, OperateType.UPDATE, "租户管理", id, dto);
 
+        // 关联系统管理客户端应用
+        String appId = "e46c0d4f85f24f759ad4d86b9505b1d4";
+        List<String> appIds = new ArrayList<>();
+        appIds.add(appId);
+        mapper.addAppsToTenant(id, appIds);
+
+        // 创建租户系统管理员
+        String userId = Generator.uuid();
+        mapper.addRelation(id, userId);
+
+        User user = new User();
+        user.setId(userId);
+        user.setName("系统管理员");
+        user.setPassword(Util.md5("123456"));
+        user.setCreator(info.getUserName());
+        user.setCreatorId(info.getUserId());
+        RabbitClient.sendTopic(user);
+
+        // 创建租户系统管理员角色
+        MemberDto member = new MemberDto();
+        member.setId(userId);
+        member.setType(1);
+        List<MemberDto> members = new ArrayList<>();
+        members.add(member);
+        core.addRole(info, id, appId, members);
+
         return ReplyHelper.success();
     }
 
@@ -151,11 +179,11 @@ public class TenantServiceImpl implements TenantService {
      * 续租
      *
      * @param info 用户关键信息
-     * @param dto  租户实体数据
+     * @param dto  租户应用实体数据
      * @return Reply
      */
     @Override
-    public Reply rentTenant(LoginInfo info, Tenant dto) {
+    public Reply rentTenant(LoginInfo info, TenantApp dto) {
         String id = dto.getId();
         Tenant tenant = mapper.getTenant(id);
         if (tenant == null) {
@@ -167,7 +195,7 @@ public class TenantServiceImpl implements TenantService {
             return ReplyHelper.fail("有效日期无效");
         }
 
-        mapper.rentTenant(id, expire);
+        mapper.rentTenant(dto);
         core.writeLog(info, OperateType.UPDATE, "租户管理", id, dto);
 
         return ReplyHelper.success();
@@ -242,8 +270,19 @@ public class TenantServiceImpl implements TenantService {
             return ReplyHelper.fail("ID不存在,未更新数据");
         }
 
+        List<AppListDto> list = mapper.getTenantApps(id);
+        list.forEach(i -> appIds.remove(i.getId()));
+        if (appIds.isEmpty()) {
+            return ReplyHelper.success();
+        }
+
         mapper.addAppsToTenant(id, appIds);
         core.writeLog(info, OperateType.INSERT, "租户管理", id, appIds);
+
+        // 为租户创建初始角色
+        for (String appId : appIds) {
+            core.addRole(info, id, appId, null);
+        }
 
         return ReplyHelper.success();
     }
@@ -261,6 +300,11 @@ public class TenantServiceImpl implements TenantService {
         Tenant tenant = mapper.getTenant(id);
         if (tenant == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
+        }
+
+        int count = mapper.getAppsRoleCount(id, appIds);
+        if (count > 0) {
+            return ReplyHelper.fail("应用对应的角色数据未删除,请先删除属于该租户的无效角色数据");
         }
 
         mapper.removeAppsFromTenant(id, appIds);

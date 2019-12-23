@@ -1,36 +1,32 @@
-package com.insight.base.tenant.common.dto;
+package com.insight.base.tenant.common.entity;
 
 import com.insight.util.Json;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
  * @author 宣炳刚
- * @date 2019/12/4
- * @remark 租户绑定应用DTO
+ * @date 2019/12/23
+ * @remark 租户应用实体类
  */
-public class AppListDto {
+public class TenantApp implements Serializable {
     private static final long serialVersionUID = -1L;
 
     /**
-     * 应用ID
+     * UUID主键
      */
     private String id;
 
     /**
-     * 应用名称
+     * 租户ID
      */
-    private String name;
+    private String tenantId;
 
     /**
-     * 应用图标
+     * 应用ID
      */
-    private String icon;
-
-    /**
-     * 应用域名
-     */
-    private String domain;
+    private String appId;
 
     /**
      * 过期日期
@@ -45,28 +41,20 @@ public class AppListDto {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getTenantId() {
+        return tenantId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
     }
 
-    public String getIcon() {
-        return icon;
+    public String getAppId() {
+        return appId;
     }
 
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
-    public String getDomain() {
-        return domain;
-    }
-
-    public void setDomain(String domain) {
-        this.domain = domain;
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 
     public LocalDate getExpireDate() {

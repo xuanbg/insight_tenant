@@ -1,5 +1,8 @@
 package com.insight.base.tenant.common;
 
+import com.insight.base.tenant.common.client.RabbitClient;
+import com.insight.base.tenant.common.dto.MemberDto;
+import com.insight.base.tenant.common.dto.RoleDto;
 import com.insight.base.tenant.common.mapper.TenantMapper;
 import com.insight.util.pojo.Log;
 import com.insight.util.pojo.LoginInfo;
@@ -29,6 +32,25 @@ public class Core {
      */
     public Core(TenantMapper mapper) {
         this.mapper = mapper;
+    }
+
+    /**
+     * 通过消息队列初始化应用内置角色
+     *
+     * @param info     用户关键信息
+     * @param tenantId 租户ID
+     * @param appId    应用ID
+     * @param members  角色成员集合
+     */
+    public void addRole(LoginInfo info, String tenantId, String appId, List<MemberDto> members) {
+        RoleDto role = new RoleDto();
+        role.setTenantId(tenantId);
+        role.setAppId(appId);
+        role.setMembers(members);
+        role.setCreator(info.getUserName());
+        role.setCreatorId(info.getUserId());
+
+        RabbitClient.sendTopic(role);
     }
 
     /**
