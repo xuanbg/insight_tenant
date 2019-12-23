@@ -89,6 +89,12 @@ public class TenantServiceImpl implements TenantService {
      */
     @Override
     public Reply addTenant(LoginInfo info, Tenant dto) {
+        String alias = dto.getAlias();
+        int count = mapper.getUserCount(alias);
+        if (count > 0){
+            return ReplyHelper.fail("简称「" + alias +"」已被使用,请使用其它简称");
+        }
+
         String id = uuid();
         dto.setId(id);
         dto.setCode(core.getCode());
