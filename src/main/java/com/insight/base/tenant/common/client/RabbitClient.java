@@ -1,7 +1,8 @@
 package com.insight.base.tenant.common.client;
 
-import com.insight.base.tenant.common.dto.RoleDto;
 import com.insight.util.common.ApplicationContextHolder;
+import com.insight.util.pojo.Organize;
+import com.insight.util.pojo.RoleDto;
 import com.insight.util.pojo.User;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
@@ -29,5 +30,14 @@ public class RabbitClient {
      */
     public static void sendTopic(RoleDto role) {
         TEMPLATE.convertAndSend("amq.topic", "tenant.addRole", role);
+    }
+
+    /**
+     * 发送组织机构数据到队列
+     *
+     * @param organize 组织机构DTO
+     */
+    public static void sendTopic(Organize organize) {
+        TEMPLATE.convertAndSend("amq.topic", "tenant.addOrganize", organize);
     }
 }

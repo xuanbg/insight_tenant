@@ -46,6 +46,16 @@ public class TopicExchangeConfig {
     }
 
     /**
+     * 新增角色队列
+     *
+     * @return Queue
+     */
+    @Bean
+    public Queue organizeQueue() {
+        return new Queue("insight.organize");
+    }
+
+    /**
      * 默认用户绑定
      * @return Binding
      */
@@ -61,5 +71,14 @@ public class TopicExchangeConfig {
     @Bean
     public Binding roleBinding(){
         return BindingBuilder.bind(roleQueue()).to(exchange()).with("tenant.addRole");
+    }
+
+    /**
+     * 默认角色绑定
+     * @return Binding
+     */
+    @Bean
+    public Binding organizeBinding(){
+        return BindingBuilder.bind(organizeQueue()).to(exchange()).with("tenant.addOrganize");
     }
 }

@@ -5,7 +5,6 @@ import com.github.pagehelper.PageInfo;
 import com.insight.base.tenant.common.Core;
 import com.insight.base.tenant.common.client.RabbitClient;
 import com.insight.base.tenant.common.dto.AppListDto;
-import com.insight.base.tenant.common.dto.MemberDto;
 import com.insight.base.tenant.common.dto.TenantListDto;
 import com.insight.base.tenant.common.entity.Tenant;
 import com.insight.base.tenant.common.entity.TenantApp;
@@ -139,6 +138,10 @@ public class TenantServiceImpl implements TenantService {
             return ReplyHelper.fail("ID不存在,未更新数据");
         }
 
+        if (tenant.getStatus() == 1) {
+            return ReplyHelper.success();
+        }
+
         int status = dto.getStatus();
         if (status < 1 || status > 2) {
             return ReplyHelper.fail("审核状态码错误");
@@ -146,7 +149,7 @@ public class TenantServiceImpl implements TenantService {
 
         mapper.auditTenant(id, status);
         core.writeLog(info, OperateType.UPDATE, "租户管理", id, dto);
-        if (status == 2){
+        if (status == 2) {
             return ReplyHelper.success();
         }
 
@@ -156,6 +159,19 @@ public class TenantServiceImpl implements TenantService {
         appIds.add(appId);
         mapper.addAppsToTenant(id, appIds);
 
+        // 创建组织
+        Organize organize = new Organize();
+        organize.setId(id);
+        organize.setTenantId(id);
+        organize.setType(0);
+        organize.setIndex(0);
+        organize.setName(tenant.getName());
+        organize.setAlias(tenant.getAlias());
+        organize.setFullName(tenant.getName());
+        organize.setCreator(info.getUserName());
+        organize.setCreatorId(info.getUserId());
+        RabbitClient.sendTopic(organize);
+
         // 创建租户系统管理员
         String userId = Generator.uuid();
         mapper.addRelation(id, userId);
@@ -163,6 +179,7 @@ public class TenantServiceImpl implements TenantService {
         User user = new User();
         user.setId(userId);
         user.setName("系统管理员");
+        user.setAccount(tenant.getAlias());
         user.setPassword(Util.md5("123456"));
         user.setCreator(info.getUserName());
         user.setCreatorId(info.getUserId());
