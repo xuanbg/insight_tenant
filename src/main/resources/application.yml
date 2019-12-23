@@ -29,6 +29,14 @@ spring:
         min-idle: 0
         max-idle: 8
         max-wait: -1
+  rabbitmq:
+    addresses: 192.168.236.8:5672
+    username: root
+    password: root
+    publisher-confirms: false
+    publisher-returns: false
+    template:
+      mandatory: false
 eureka:
   client:
     fetch-registry: true
