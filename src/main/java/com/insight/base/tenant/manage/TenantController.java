@@ -44,7 +44,6 @@ public class TenantController {
         return service.getTenants(keyword, page, size);
     }
 
-
     /**
      * 查询指定ID的租户信息
      *
@@ -54,6 +53,30 @@ public class TenantController {
     @GetMapping("/v1.0/tenants/{id}")
     public Reply getTenant(@PathVariable String id) {
         return service.getTenant(id);
+    }
+
+    /**
+     * 查询指定ID的租户绑定的应用集合
+     *
+     * @param id 租户ID
+     * @return Reply
+     */
+    @GetMapping("/v1.0/tenants/{id}/apps")
+    public Reply getTenantApps(@PathVariable String id) {
+        return service.getTenantApps(id);
+    }
+
+    /**
+     * 获取指定ID的租户的用户集合
+     *
+     * @param id   租户ID
+     * @param page 分页页码
+     * @param size 每页记录数
+     * @return Reply
+     */
+    @GetMapping("/v1.0/tenants/{id}/users")
+    public Reply getTenantUsers(@PathVariable String id, @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "20") int size) {
+        return service.getTenantUsers(id, page, size);
     }
 
     /**
@@ -96,20 +119,6 @@ public class TenantController {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
         return service.auditTenant(loginInfo, tenant);
-    }
-
-    /**
-     * 续租
-     *
-     * @param info 用户关键信息
-     * @param dto  租户应用实体数据
-     * @return Reply
-     */
-    @PutMapping("/v1.0/tenants/exp")
-    public Reply rentTenant(@RequestHeader("loginInfo") String info, @RequestBody TenantApp dto) {
-        LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
-
-        return service.rentTenant(loginInfo, dto);
     }
 
     /**
@@ -160,9 +169,9 @@ public class TenantController {
      * @param id 租户ID
      * @return Reply
      */
-    @GetMapping("/v1.0/tenants/{id}/apps")
-    public Reply getTenantApps(@PathVariable String id) {
-        return service.getTenantApps(id);
+    @GetMapping("/v1.0/tenants/{id}/unbounds")
+    public Reply getUnboundApps(@PathVariable String id) {
+        return service.getUnboundApps(id);
     }
 
     /**
@@ -202,6 +211,22 @@ public class TenantController {
     }
 
     /**
+     * 续租应用
+     *
+     * @param info 用户关键信息
+     * @param id   租户ID
+     * @param dto  租户应用实体数据
+     * @return Reply
+     */
+    @PutMapping("/v1.0/tenants/{id}/apps")
+    public Reply rentTenantApp(@RequestHeader("loginInfo") String info, @PathVariable String id, @RequestBody TenantApp dto) {
+        LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
+        dto.setTenantId(id);
+
+        return service.rentTenantApp(loginInfo, dto);
+    }
+
+    /**
      * 获取日志列表
      *
      * @param info    用户关键信息
@@ -215,7 +240,7 @@ public class TenantController {
                                @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "20") int size) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
-        return service.getTemplateLogs(loginInfo.getTenantId(), keyword, page, size);
+        return service.getTenantLogs(loginInfo.getTenantId(), keyword, page, size);
     }
 
     /**
@@ -230,6 +255,6 @@ public class TenantController {
             return ReplyHelper.invalidParam();
         }
 
-        return service.getTemplateLog(id);
+        return service.getTenantLog(id);
     }
 }

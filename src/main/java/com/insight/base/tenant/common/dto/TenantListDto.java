@@ -1,9 +1,9 @@
 package com.insight.base.tenant.common.dto;
 
+import com.insight.base.tenant.common.entity.CompanyInfo;
 import com.insight.util.Json;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 
 /**
  * @author 宣炳刚
@@ -29,14 +29,19 @@ public class TenantListDto implements Serializable {
     private String name;
 
     /**
+     * 租户别名
+     */
+    private String alias;
+
+    /**
+     * 企业信息
+     */
+    private CompanyInfo companyInfo;
+
+    /**
      * 描述
      */
     private String remark;
-
-    /**
-     * 过期日期
-     */
-    private LocalDate expireDate;
 
     /**
      * 租户状态：0、待审核；1、已通过；2、未通过
@@ -72,20 +77,28 @@ public class TenantListDto implements Serializable {
         this.name = name;
     }
 
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
+    public CompanyInfo getCompanyInfo() {
+        return companyInfo;
+    }
+
+    public void setCompanyInfo(CompanyInfo companyInfo) {
+        this.companyInfo = companyInfo;
+    }
+
     public String getRemark() {
         return remark;
     }
 
     public void setRemark(String remark) {
         this.remark = remark;
-    }
-
-    public LocalDate getExpireDate() {
-        return expireDate;
-    }
-
-    public void setExpireDate(LocalDate expireDate) {
-        this.expireDate = expireDate;
     }
 
     public Integer getStatus() {

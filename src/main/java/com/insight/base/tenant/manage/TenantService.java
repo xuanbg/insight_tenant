@@ -33,6 +33,24 @@ public interface TenantService {
     Reply getTenant(String id);
 
     /**
+     * 查询指定ID的租户绑定的应用集合
+     *
+     * @param id 租户ID
+     * @return Reply
+     */
+    Reply getTenantApps(String id);
+
+    /**
+     * 获取指定ID的租户的用户集合
+     *
+     * @param tenantId 租户ID
+     * @param page     分页页码
+     * @param size     每页记录数
+     * @return Reply
+     */
+    Reply getTenantUsers(String tenantId, int page, int size);
+
+    /**
      * 新增租户
      *
      * @param info 用户关键信息
@@ -60,15 +78,6 @@ public interface TenantService {
     Reply auditTenant(LoginInfo info, Tenant dto);
 
     /**
-     * 续租
-     *
-     * @param info 用户信息
-     * @param dto  租户应用实体数据
-     * @return Reply
-     */
-    Reply rentTenant(LoginInfo info, TenantApp dto);
-
-    /**
      * 启用、禁用租户信息
      *
      * @param info   用户信息
@@ -88,12 +97,12 @@ public interface TenantService {
     Reply deleteTenant(LoginInfo info, String id);
 
     /**
-     * 查询指定ID的租户绑定的应用集合
+     * 获取租户可用应用集合
      *
      * @param id 租户ID
      * @return Reply
      */
-    Reply getTenantApps(String id);
+    Reply getUnboundApps(String id);
 
     /**
      * 设置应用与指定ID的租户的绑定关系
@@ -116,6 +125,15 @@ public interface TenantService {
     Reply removeAppsFromTenant(LoginInfo info, String id, List<String> appIds);
 
     /**
+     * 续租应用
+     *
+     * @param info 用户信息
+     * @param dto  租户应用实体数据
+     * @return Reply
+     */
+    Reply rentTenantApp(LoginInfo info, TenantApp dto);
+
+    /**
      * 获取日志列表
      *
      * @param tenantId 租户ID
@@ -124,7 +142,7 @@ public interface TenantService {
      * @param size     每页记录数
      * @return Reply
      */
-    Reply getTemplateLogs(String tenantId, String keyword, int page, int size);
+    Reply getTenantLogs(String tenantId, String keyword, int page, int size);
 
     /**
      * 获取日志详情
@@ -132,5 +150,5 @@ public interface TenantService {
      * @param id 日志ID
      * @return Reply
      */
-    Reply getTemplateLog(String id);
+    Reply getTenantLog(String id);
 }

@@ -2,6 +2,7 @@ package com.insight.base.tenant.common.dto;
 
 import com.insight.util.Json;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
@@ -9,7 +10,7 @@ import java.time.LocalDate;
  * @date 2019/12/4
  * @remark 租户绑定应用DTO
  */
-public class AppListDto {
+public class AppListDto implements Serializable {
     private static final long serialVersionUID = -1L;
 
     /**
@@ -18,9 +19,19 @@ public class AppListDto {
     private String id;
 
     /**
+     * 租户ID
+     */
+    private String tenantId;
+
+    /**
      * 应用名称
      */
     private String name;
+
+    /**
+     * 应用简称
+     */
+    private String alias;
 
     /**
      * 应用图标
@@ -45,12 +56,28 @@ public class AppListDto {
         this.id = id;
     }
 
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
+    }
+
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 
     public String getIcon() {

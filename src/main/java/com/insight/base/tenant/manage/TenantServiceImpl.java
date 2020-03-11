@@ -6,6 +6,7 @@ import com.insight.base.tenant.common.Core;
 import com.insight.base.tenant.common.client.RabbitClient;
 import com.insight.base.tenant.common.dto.AppListDto;
 import com.insight.base.tenant.common.dto.TenantListDto;
+import com.insight.base.tenant.common.dto.UserListDto;
 import com.insight.base.tenant.common.entity.Tenant;
 import com.insight.base.tenant.common.entity.TenantApp;
 import com.insight.base.tenant.common.mapper.TenantMapper;
@@ -81,6 +82,36 @@ public class TenantServiceImpl implements TenantService {
     }
 
     /**
+     * 查询指定ID的租户绑定的应用集合
+     *
+     * @param id 租户ID
+     * @return Reply
+     */
+    @Override
+    public Reply getTenantApps(String id) {
+        List<AppListDto> list = mapper.getTenantApps(id);
+
+        return ReplyHelper.success(list);
+    }
+
+    /**
+     * 获取指定ID的租户的用户集合
+     *
+     * @param tenantId 租户ID
+     * @param page     分页页码
+     * @param size     每页记录数
+     * @return Reply
+     */
+    @Override
+    public Reply getTenantUsers(String tenantId, int page, int size) {
+        PageHelper.startPage(page, size);
+        List<UserListDto> users = mapper.getTenantUsers(tenantId);
+        PageInfo<UserListDto> pageInfo = new PageInfo<>(users);
+
+        return ReplyHelper.success(users, pageInfo.getTotal());
+    }
+
+    /**
      * 新增租户
      *
      * @param info 访问令牌
@@ -91,8 +122,8 @@ public class TenantServiceImpl implements TenantService {
     public Reply addTenant(LoginInfo info, Tenant dto) {
         String alias = dto.getAlias();
         int count = mapper.getUserCount(alias);
-        if (count > 0){
-            return ReplyHelper.fail("简称「" + alias +"」已被使用,请使用其它简称");
+        if (count > 0) {
+            return ReplyHelper.fail("简称「" + alias + "」已被使用,请使用其它简称");
         }
 
         String id = uuid();
@@ -203,38 +234,6 @@ public class TenantServiceImpl implements TenantService {
     }
 
     /**
-     * 续租
-     *
-     * @param info 用户关键信息
-     * @param dto  租户应用实体数据
-     * @return Reply
-     */
-    @Override
-    public Reply rentTenant(LoginInfo info, TenantApp dto) {
-        String tenantId = dto.getTenantId();
-        Tenant tenant = mapper.getTenant(tenantId);
-        if (tenant == null) {
-            return ReplyHelper.fail("ID不存在,未更新数据");
-        }
-
-        LocalDate expire = dto.getExpireDate();
-        if (expire == null || LocalDate.now().isAfter(expire)) {
-            return ReplyHelper.fail("有效日期无效");
-        }
-
-        mapper.rentTenant(dto);
-        core.writeLog(info, OperateType.UPDATE, "租户管理", tenantId, dto);
-
-        // 更新缓存数据
-        String key = "App:" + dto.getAppId();
-        if (Redis.hasKey(key)) {
-            Redis.set(key, tenantId, dto.getExpireDate());
-        }
-
-        return ReplyHelper.success();
-    }
-
-    /**
      * 启用、禁用租户信息
      *
      * @param info   用户关键信息
@@ -276,14 +275,14 @@ public class TenantServiceImpl implements TenantService {
     }
 
     /**
-     * 查询指定ID的租户绑定的应用集合
+     * 获取租户可用应用集合
      *
      * @param id 租户ID
      * @return Reply
      */
     @Override
-    public Reply getTenantApps(String id) {
-        List<AppListDto> list = mapper.getTenantApps(id);
+    public Reply getUnboundApps(String id) {
+        List<AppListDto> list = mapper.getUnboundApps(id);
 
         return ReplyHelper.success(list);
     }
@@ -347,6 +346,38 @@ public class TenantServiceImpl implements TenantService {
     }
 
     /**
+     * 续租应用
+     *
+     * @param info 用户关键信息
+     * @param dto  租户应用实体数据
+     * @return Reply
+     */
+    @Override
+    public Reply rentTenantApp(LoginInfo info, TenantApp dto) {
+        String tenantId = dto.getTenantId();
+        Tenant tenant = mapper.getTenant(tenantId);
+        if (tenant == null) {
+            return ReplyHelper.fail("ID不存在,未更新数据");
+        }
+
+        LocalDate expire = dto.getExpireDate();
+        if (expire == null || LocalDate.now().isAfter(expire)) {
+            return ReplyHelper.fail("到期日期无效");
+        }
+
+        mapper.rentTenant(dto);
+        core.writeLog(info, OperateType.UPDATE, "租户管理", tenantId, dto);
+
+        // 更新缓存数据
+        String key = "App:" + dto.getAppId();
+        if (Redis.hasKey(key)) {
+            Redis.set(key, tenantId, dto.getExpireDate());
+        }
+
+        return ReplyHelper.success();
+    }
+
+    /**
      * 获取日志列表
      *
      * @param tenantId 租户ID
@@ -356,7 +387,7 @@ public class TenantServiceImpl implements TenantService {
      * @return Reply
      */
     @Override
-    public Reply getTemplateLogs(String tenantId, String keyword, int page, int size) {
+    public Reply getTenantLogs(String tenantId, String keyword, int page, int size) {
         PageHelper.startPage(page, size);
         List<Log> logs = core.getLogs(tenantId, "租户管理", keyword);
         PageInfo<Log> pageInfo = new PageInfo<>(logs);
@@ -371,7 +402,7 @@ public class TenantServiceImpl implements TenantService {
      * @return Reply
      */
     @Override
-    public Reply getTemplateLog(String id) {
+    public Reply getTenantLog(String id) {
         Log log = core.getLog(id);
         if (log == null) {
             return ReplyHelper.fail("ID不存在,未读取数据");

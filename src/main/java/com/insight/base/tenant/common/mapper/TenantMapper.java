@@ -2,6 +2,7 @@ package com.insight.base.tenant.common.mapper;
 
 import com.insight.base.tenant.common.dto.AppListDto;
 import com.insight.base.tenant.common.dto.TenantListDto;
+import com.insight.base.tenant.common.dto.UserListDto;
 import com.insight.base.tenant.common.entity.CompanyInfo;
 import com.insight.base.tenant.common.entity.Tenant;
 import com.insight.base.tenant.common.entity.TenantApp;
@@ -34,8 +35,9 @@ public interface TenantMapper {
      * @param key 查询关键词
      * @return 租户列表
      */
-    @Select("<script>select id, code, name, remark, expire_date, status, is_invalid from ibt_tenant " +
-            "<if test = 'key != null'>where code = #{key} or name like concat('%',#{key},'%')</if>" +
+    @Results({@Result(property = "companyInfo", column = "company_info", javaType = CompanyInfo.class, typeHandler = JsonTypeHandler.class)})
+    @Select("<script>select id, code, name, alias, company_info, remark, status, is_invalid from ibt_tenant " +
+            "<if test = 'key != null'>where code = #{key} or name like concat('%',#{key},'%') or alias = #{key} </if>" +
             "order by created_time</script>")
     List<TenantListDto> getTenants(@Param("key") String key);
 
@@ -48,6 +50,25 @@ public interface TenantMapper {
     @Results({@Result(property = "companyInfo", column = "company_info", javaType = CompanyInfo.class, typeHandler = JsonTypeHandler.class)})
     @Select("select * from ibt_tenant where id = #{id};")
     Tenant getTenant(String id);
+
+    /**
+     * 获取租户绑定的应用集合
+     *
+     * @param id 租户ID
+     * @return 租户绑定的应用集合
+     */
+    @Select("select a.id, r.tenant_id, a.name, a.icon, a.domain, r.expire_date from ibt_tenant_app r join ibs_application a on a.id = r.app_id where r.tenant_id = #{id};")
+    List<AppListDto> getTenantApps(String id);
+
+    /**
+     * 获取指定ID的租户的用户集合
+     *
+     * @param tenantId 租户ID
+     * @return 用户集合
+     */
+    @Select("select u.id, u.code, u.name, u.account, u.mobile, u.remark, u.is_builtin, u.is_invalid " +
+            "from ibu_user u join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId} order by u.created_time")
+    List<UserListDto> getTenantUsers(String tenantId);
 
     /**
      * 获取指定编码的租户数量
@@ -115,15 +136,6 @@ public interface TenantMapper {
     void changeTenantStatus(@Param("id") String id, @Param("status") boolean status);
 
     /**
-     * 获取租户绑定的应用集合
-     *
-     * @param id 租户ID
-     * @return 租户绑定的应用集合
-     */
-    @Select("select a.id, a.name, a.icon, a.domain, r.expire_date from ibt_tenant_app r join ibs_application a on a.id = r.app_id where r.tenant_id = #{id};")
-    List<AppListDto> getTenantApps(String id);
-
-    /**
      * 获取租户绑定应用的角色数量
      *
      * @param id     租户ID
@@ -134,6 +146,16 @@ public interface TenantMapper {
             "(<foreach collection = \"list\" item = \"item\" index = \"index\" separator = \",\">" +
             "#{item}</foreach>);</script>")
     int getAppsRoleCount(@Param("id") String id, @Param("list") List<String> appIds);
+
+    /**
+     * 获取租户未绑定的应用集合
+     *
+     * @param id 租户ID
+     * @return 应用集合
+     */
+    @Select("select a.id, #{id} as tenant_id, a.name, a.alias, a.icon, a.domain, date_add(curdate(), interval 90 day) as expire_date from ibs_application a " +
+            "left join ibt_tenant_app r on r.app_id = a.id and r.tenant_id = #{id} where r.id is null;")
+    List<AppListDto> getUnboundApps(String id);
 
     /**
      * 设置应用与指定ID的租户的绑定关系
