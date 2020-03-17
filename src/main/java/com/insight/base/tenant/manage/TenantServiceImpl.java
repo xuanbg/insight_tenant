@@ -302,6 +302,10 @@ public class TenantServiceImpl implements TenantService {
             return ReplyHelper.fail("ID不存在,未更新数据");
         }
 
+        if (tenant.getStatus() != 1){
+            return ReplyHelper.fail("租户尚未通过审核,不能关联应用");
+        }
+
         List<AppListDto> list = mapper.getTenantApps(id);
         list.forEach(i -> appIds.remove(i.getId()));
         if (appIds.isEmpty()) {
