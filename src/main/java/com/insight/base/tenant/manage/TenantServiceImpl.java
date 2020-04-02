@@ -18,6 +18,7 @@ import com.insight.util.pojo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -168,6 +169,7 @@ public class TenantServiceImpl implements TenantService {
      * @return Reply
      */
     @Override
+    @Transactional
     public Reply auditTenant(LoginInfo info, Tenant dto) {
         String id = dto.getId();
         Tenant tenant = mapper.getTenant(id);
