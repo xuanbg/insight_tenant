@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.insight.base.tenant.common.Core;
 import com.insight.base.tenant.common.client.RabbitClient;
 import com.insight.base.tenant.common.dto.AppListDto;
+import com.insight.base.tenant.common.dto.Organize;
 import com.insight.base.tenant.common.dto.TenantListDto;
 import com.insight.base.tenant.common.dto.UserListDto;
 import com.insight.base.tenant.common.entity.Tenant;

@@ -1,8 +1,8 @@
 package com.insight.base.tenant.common.client;
 
+import com.insight.base.tenant.common.dto.Organize;
+import com.insight.base.tenant.common.dto.RoleDto;
 import com.insight.util.common.ApplicationContextHolder;
-import com.insight.util.pojo.Organize;
-import com.insight.util.pojo.RoleDto;
 import com.insight.util.pojo.User;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 

@@ -1,8 +1,12 @@
 package com.insight.base.tenant.common;
 
 import com.insight.base.tenant.common.client.RabbitClient;
+import com.insight.base.tenant.common.dto.RoleDto;
 import com.insight.base.tenant.common.mapper.TenantMapper;
-import com.insight.util.pojo.*;
+import com.insight.util.pojo.Log;
+import com.insight.util.pojo.LoginInfo;
+import com.insight.util.pojo.MemberDto;
+import com.insight.util.pojo.OperateType;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
