@@ -11,11 +11,10 @@ import com.insight.base.tenant.common.dto.UserListDto;
 import com.insight.base.tenant.common.entity.Tenant;
 import com.insight.base.tenant.common.entity.TenantApp;
 import com.insight.base.tenant.common.mapper.TenantMapper;
-import com.insight.util.Generator;
-import com.insight.util.Redis;
-import com.insight.util.ReplyHelper;
-import com.insight.util.Util;
-import com.insight.util.pojo.*;
+import com.insight.utils.Redis;
+import com.insight.utils.ReplyHelper;
+import com.insight.utils.Util;
+import com.insight.utils.pojo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -25,8 +24,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.insight.util.Generator.uuid;
 
 /**
  * @author 宣炳刚
@@ -128,7 +125,7 @@ public class TenantServiceImpl implements TenantService {
             return ReplyHelper.fail("简称「" + alias + "」已被使用,请使用其它简称");
         }
 
-        String id = uuid();
+        String id = Util.uuid();
         dto.setId(id);
         dto.setCode(core.getCode());
         dto.setCreator(info.getUserName());
@@ -213,7 +210,7 @@ public class TenantServiceImpl implements TenantService {
         RabbitClient.sendTopic(organize);
 
         // 创建租户系统管理员
-        String userId = Generator.uuid();
+        String userId = Util.uuid();
         mapper.addRelation(id, userId);
 
         User user = new User();

@@ -6,8 +6,8 @@ import com.insight.base.tenant.common.dto.UserListDto;
 import com.insight.base.tenant.common.entity.CompanyInfo;
 import com.insight.base.tenant.common.entity.Tenant;
 import com.insight.base.tenant.common.entity.TenantApp;
-import com.insight.util.common.JsonTypeHandler;
-import com.insight.util.pojo.Log;
+import com.insight.utils.common.JsonTypeHandler;
+import com.insight.utils.pojo.Log;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -85,7 +85,7 @@ public interface TenantMapper {
      * @param tenant 租户DTO
      */
     @Insert("insert ibt_tenant(id, code, name, alias, company_info, remark, creator, creator_id, created_time) values " +
-            "(#{id}, #{code}, #{name}, #{alias}, #{companyInfo, typeHandler = com.insight.util.common.JsonTypeHandler}, #{remark}, #{creator}, #{creatorId}, #{createdTime});")
+            "(#{id}, #{code}, #{name}, #{alias}, #{companyInfo, typeHandler = com.insight.utils.common.JsonTypeHandler}, #{remark}, #{creator}, #{creatorId}, #{createdTime});")
     void addTenant(Tenant tenant);
 
     /**
@@ -93,7 +93,7 @@ public interface TenantMapper {
      *
      * @param tenant 租户DTO
      */
-    @Update("update ibt_tenant set name = #{name}, alias = #{alias}, company_info = #{companyInfo, typeHandler = com.insight.util.common.JsonTypeHandler}, remark = #{remark} where id = #{id};")
+    @Update("update ibt_tenant set name = #{name}, alias = #{alias}, company_info = #{companyInfo, typeHandler = com.insight.utils.common.JsonTypeHandler}, remark = #{remark} where id = #{id};")
     void editTenant(Tenant tenant);
 
     /**
@@ -220,7 +220,7 @@ public interface TenantMapper {
      * @param log 日志DTO
      */
     @Insert("insert ibl_operate_log(id, tenant_id, type, business, business_id, content, creator, creator_id, created_time) values " +
-            "(#{id}, #{tenantId}, #{type}, #{business}, #{businessId}, #{content, typeHandler = com.insight.util.common.JsonTypeHandler}, " +
+            "(#{id}, #{tenantId}, #{type}, #{business}, #{businessId}, #{content, typeHandler = com.insight.utils.common.JsonTypeHandler}, " +
             "#{creator}, #{creatorId}, #{createdTime});")
     void addLog(Log log);
 }

@@ -1,7 +1,7 @@
 package com.insight.base.tenant.common.dto;
 
 import com.insight.base.tenant.common.entity.CompanyInfo;
-import com.insight.util.Json;
+import com.insight.utils.Json;
 
 import java.io.Serializable;
 

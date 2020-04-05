@@ -2,10 +2,10 @@ package com.insight.base.tenant.manage;
 
 import com.insight.base.tenant.common.entity.Tenant;
 import com.insight.base.tenant.common.entity.TenantApp;
-import com.insight.util.Json;
-import com.insight.util.ReplyHelper;
-import com.insight.util.pojo.LoginInfo;
-import com.insight.util.pojo.Reply;
+import com.insight.utils.Json;
+import com.insight.utils.ReplyHelper;
+import com.insight.utils.pojo.LoginInfo;
+import com.insight.utils.pojo.Reply;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;

@@ -1,7 +1,7 @@
 package com.insight.base.tenant.common.dto;
 
-import com.insight.util.Json;
-import com.insight.util.pojo.MemberDto;
+import com.insight.utils.Json;
+import com.insight.utils.pojo.MemberDto;
 
 import java.io.Serializable;
 import java.util.List;

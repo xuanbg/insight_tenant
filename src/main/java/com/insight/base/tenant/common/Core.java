@@ -3,18 +3,17 @@ package com.insight.base.tenant.common;
 import com.insight.base.tenant.common.client.RabbitClient;
 import com.insight.base.tenant.common.dto.RoleDto;
 import com.insight.base.tenant.common.mapper.TenantMapper;
-import com.insight.util.pojo.Log;
-import com.insight.util.pojo.LoginInfo;
-import com.insight.util.pojo.MemberDto;
-import com.insight.util.pojo.OperateType;
+import com.insight.utils.Generator;
+import com.insight.utils.Util;
+import com.insight.utils.pojo.Log;
+import com.insight.utils.pojo.LoginInfo;
+import com.insight.utils.pojo.MemberDto;
+import com.insight.utils.pojo.OperateType;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import static com.insight.util.Generator.newCode;
-import static com.insight.util.Generator.uuid;
 
 /**
  * @author 宣炳刚
@@ -60,7 +59,7 @@ public class Core {
      */
     public String getCode() {
         while (true) {
-            String code = newCode("TI-#5", "Tenant", false);
+            String code = Generator.newCode("TI-#5", "Tenant", false);
             int count = mapper.getTenantCount(code);
             if (count > 0) {
                 continue;
@@ -82,7 +81,7 @@ public class Core {
     @Async
     public void writeLog(LoginInfo info, OperateType type, String business, String id, Object content) {
         Log log = new Log();
-        log.setId(uuid());
+        log.setId(Util.uuid());
         log.setType(type);
         log.setBusiness(business);
         log.setBusinessId(id);

@@ -2,8 +2,8 @@ package com.insight.base.tenant.manage;
 
 import com.insight.base.tenant.common.entity.Tenant;
 import com.insight.base.tenant.common.entity.TenantApp;
-import com.insight.util.pojo.LoginInfo;
-import com.insight.util.pojo.Reply;
+import com.insight.utils.pojo.LoginInfo;
+import com.insight.utils.pojo.Reply;
 
 import java.util.List;
 
