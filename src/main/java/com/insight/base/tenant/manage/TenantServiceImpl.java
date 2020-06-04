@@ -3,6 +3,8 @@ package com.insight.base.tenant.manage;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.insight.base.tenant.common.Core;
+import com.insight.base.tenant.common.client.LogClient;
+import com.insight.base.tenant.common.client.LogServiceClient;
 import com.insight.base.tenant.common.client.RabbitClient;
 import com.insight.base.tenant.common.dto.AppListDto;
 import com.insight.base.tenant.common.dto.Organize;
@@ -32,18 +34,22 @@ import java.util.List;
  */
 @Service
 public class TenantServiceImpl implements TenantService {
+    private static final String BUSINESS = "租户管理";
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final Core core;
+    private final LogServiceClient client;
     private final TenantMapper mapper;
 
     /**
      * 构造方法
      *
      * @param core   Core
+     * @param client LogServiceClient
      * @param mapper TenantMapper
      */
-    public TenantServiceImpl(Core core, TenantMapper mapper) {
+    public TenantServiceImpl(Core core, LogServiceClient client, TenantMapper mapper) {
         this.core = core;
+        this.client = client;
         this.mapper = mapper;
     }
 
@@ -133,7 +139,7 @@ public class TenantServiceImpl implements TenantService {
         dto.setCreatedTime(LocalDateTime.now());
 
         mapper.addTenant(dto);
-        core.writeLog(info, OperateType.INSERT, "租户管理", id, dto);
+        LogClient.writeLog(info, BUSINESS, OperateType.INSERT, id, dto);
 
         return ReplyHelper.created(id);
     }
@@ -154,7 +160,7 @@ public class TenantServiceImpl implements TenantService {
         }
 
         mapper.editTenant(dto);
-        core.writeLog(info, OperateType.UPDATE, "租户管理", id, dto);
+        LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, id, dto);
 
         return ReplyHelper.success();
     }
@@ -185,7 +191,7 @@ public class TenantServiceImpl implements TenantService {
         }
 
         mapper.auditTenant(id, status);
-        core.writeLog(info, OperateType.UPDATE, "租户管理", id, dto);
+        LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, id, dto);
         if (status == 2) {
             return ReplyHelper.success();
         }
@@ -249,7 +255,7 @@ public class TenantServiceImpl implements TenantService {
         }
 
         mapper.changeTenantStatus(id, status);
-        core.writeLog(info, OperateType.UPDATE, "租户管理", id, tenant);
+        LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, id, tenant);
 
         return ReplyHelper.success();
     }
@@ -269,7 +275,7 @@ public class TenantServiceImpl implements TenantService {
         }
 
         mapper.deleteTenant(id);
-        core.writeLog(info, OperateType.UPDATE, "租户管理", id, tenant);
+        LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, id, tenant);
 
         return ReplyHelper.success();
     }
@@ -302,7 +308,7 @@ public class TenantServiceImpl implements TenantService {
             return ReplyHelper.fail("ID不存在,未更新数据");
         }
 
-        if (tenant.getStatus() != 1){
+        if (tenant.getStatus() != 1) {
             return ReplyHelper.fail("租户尚未通过审核,不能关联应用");
         }
 
@@ -313,7 +319,7 @@ public class TenantServiceImpl implements TenantService {
         }
 
         mapper.addAppsToTenant(id, appIds);
-        core.writeLog(info, OperateType.INSERT, "租户管理", id, appIds);
+        LogClient.writeLog(info, BUSINESS, OperateType.INSERT, id, appIds);
 
         // 为租户创建初始角色
         for (String appId : appIds) {
@@ -344,7 +350,7 @@ public class TenantServiceImpl implements TenantService {
         }
 
         mapper.removeAppsFromTenant(id, appIds);
-        core.writeLog(info, OperateType.DELETE, "租户管理", id, appIds);
+        LogClient.writeLog(info, BUSINESS, OperateType.DELETE, id, appIds);
 
         return ReplyHelper.success();
     }
@@ -370,7 +376,7 @@ public class TenantServiceImpl implements TenantService {
         }
 
         mapper.rentTenant(dto);
-        core.writeLog(info, OperateType.UPDATE, "租户管理", tenantId, dto);
+        LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, tenantId, dto);
 
         // 更新缓存数据
         String key = "App:" + dto.getAppId();
@@ -392,11 +398,7 @@ public class TenantServiceImpl implements TenantService {
      */
     @Override
     public Reply getTenantLogs(String tenantId, String keyword, int page, int size) {
-        PageHelper.startPage(page, size);
-        List<Log> logs = core.getLogs(tenantId, "租户管理", keyword);
-        PageInfo<Log> pageInfo = new PageInfo<>(logs);
-
-        return ReplyHelper.success(logs, pageInfo.getTotal());
+        return client.getLogs(BUSINESS, keyword, page, size);
     }
 
     /**
@@ -407,11 +409,6 @@ public class TenantServiceImpl implements TenantService {
      */
     @Override
     public Reply getTenantLog(String id) {
-        Log log = core.getLog(id);
-        if (log == null) {
-            return ReplyHelper.fail("ID不存在,未读取数据");
-        }
-
-        return ReplyHelper.success(log);
+        return client.getLog(id);
     }
 }
