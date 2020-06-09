@@ -390,14 +390,13 @@ public class TenantServiceImpl implements TenantService {
     /**
      * 获取日志列表
      *
-     * @param tenantId 租户ID
-     * @param keyword  查询关键词
-     * @param page     分页页码
-     * @param size     每页记录数
+     * @param keyword 查询关键词
+     * @param page    分页页码
+     * @param size    每页记录数
      * @return Reply
      */
     @Override
-    public Reply getTenantLogs(String tenantId, String keyword, int page, int size) {
+    public Reply getTenantLogs(String keyword, int page, int size) {
         return client.getLogs(BUSINESS, keyword, page, size);
     }
 
