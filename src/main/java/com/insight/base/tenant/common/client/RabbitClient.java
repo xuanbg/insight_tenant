@@ -1,9 +1,7 @@
 package com.insight.base.tenant.common.client;
 
-import com.insight.base.tenant.common.dto.Organize;
-import com.insight.base.tenant.common.dto.RoleDto;
+import com.insight.utils.Json;
 import com.insight.utils.common.ApplicationContextHolder;
-import com.insight.utils.pojo.User;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 /**
@@ -17,27 +15,11 @@ public class RabbitClient {
     /**
      * 发送用户数据到队列
      *
-     * @param user 用户DTO
+     * @param key  路由Key
+     * @param data 用户DTO
      */
-    public static void sendTopic(User user) {
-        TEMPLATE.convertAndSend("amq.topic", "tenant.addUser", user);
-    }
-
-    /**
-     * 发送角色数据到队列
-     *
-     * @param role 角色DTO
-     */
-    public static void sendTopic(RoleDto role) {
-        TEMPLATE.convertAndSend("amq.topic", "tenant.addRole", role);
-    }
-
-    /**
-     * 发送组织机构数据到队列
-     *
-     * @param organize 组织机构DTO
-     */
-    public static void sendTopic(Organize organize) {
-        TEMPLATE.convertAndSend("amq.topic", "tenant.addOrganize", organize);
+    public static void sendTopic(String key, Object data) {
+        Object object = Json.clone(data, Object.class);
+        TEMPLATE.convertAndSend("amq.topic", key, object);
     }
 }

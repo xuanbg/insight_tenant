@@ -44,7 +44,7 @@ public class Core {
         role.setCreator(info.getUserName());
         role.setCreatorId(info.getUserId());
 
-        RabbitClient.sendTopic(role);
+        RabbitClient.sendTopic("tenant.addRole", role);
     }
 
     /**

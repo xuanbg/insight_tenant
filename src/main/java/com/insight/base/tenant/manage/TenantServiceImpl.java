@@ -213,7 +213,7 @@ public class TenantServiceImpl implements TenantService {
         organize.setFullName(tenant.getName());
         organize.setCreator(info.getUserName());
         organize.setCreatorId(info.getUserId());
-        RabbitClient.sendTopic(organize);
+        RabbitClient.sendTopic("tenant.addOrganize", organize);
 
         // 创建租户系统管理员
         String userId = Util.uuid();
@@ -226,7 +226,7 @@ public class TenantServiceImpl implements TenantService {
         user.setPassword(Util.md5("123456"));
         user.setCreator(info.getUserName());
         user.setCreatorId(info.getUserId());
-        RabbitClient.sendTopic(user);
+        RabbitClient.sendTopic("tenant.addUser", user);
 
         // 创建租户系统管理员角色
         MemberDto member = new MemberDto();
