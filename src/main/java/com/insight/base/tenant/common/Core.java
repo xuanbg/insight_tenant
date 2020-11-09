@@ -53,8 +53,10 @@ public class Core {
      * @return 租户编码
      */
     public String getCode() {
+        String group = "Base:Tenant";
+        String format = "TI-#5";
         while (true) {
-            String code = Generator.newCode("TI-#5", "Tenant", false);
+            String code = Generator.newCode(format, group, false);
             int count = mapper.getTenantCount(code);
             if (count > 0) {
                 continue;
