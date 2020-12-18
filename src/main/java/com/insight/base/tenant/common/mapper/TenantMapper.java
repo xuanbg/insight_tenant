@@ -117,12 +117,12 @@ public interface TenantMapper {
      *
      * @param id 租户ID
      */
-    @Delete("delete t, a, u, o, om, g, gm, r, rm, f, d from ibt_tenant t " +
+    @Delete("delete t, a, u, o, om, g, gm, r, rm, f from ibt_tenant t " +
             "left join ibt_tenant_app a on a.tenant_id = t.id left join ibt_tenant_user u on u.tenant_id = t.id " +
             "left join ibo_organize o on o.tenant_id = t.id left join ibo_organize_member om on om.post_id = o.id " +
             "left join ibu_group g on g.tenant_id = t.id left join ibu_group_member gm on gm.group_id = g.id " +
             "left join ibr_role r on r.tenant_id = t.id left join ibr_role_member rm on rm.role_id = r.id " +
-            "left join ibr_role_func_permit f on f.role_id = r.id left join ibr_role_data_permit d on d.role_id = r.id where t.id = #{id};")
+            "left join ibr_role_permit f on f.role_id = r.id where t.id = #{id};")
     void deleteTenant(String id);
 
     /**
