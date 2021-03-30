@@ -381,7 +381,7 @@ public class TenantServiceImpl implements TenantService {
         // 更新缓存数据
         String key = "App:" + dto.getAppId();
         if (Redis.hasKey(key)) {
-            Redis.set(key, tenantId, dto.getExpireDate());
+            Redis.setHash(key, tenantId, dto.getExpireDate());
         }
 
         return ReplyHelper.success();
