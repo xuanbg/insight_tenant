@@ -162,9 +162,9 @@ public interface TenantMapper {
      * @param id     租户ID
      * @param appIds 应用ID集合
      */
-    @Insert("<script>insert ibt_tenant_app (`id`, `tenant_id`, `app_id`, expire_date) values " +
+    @Insert("<script>insert ibt_tenant_app (`tenant_id`, `app_id`, expire_date) values " +
             "<foreach collection = \"list\" item = \"item\" index = \"index\" separator = \",\">" +
-            "(replace(uuid(), '-', ''), #{id}, #{item}, date_add(curdate(), interval 90 day))</foreach>;</script>")
+            "(#{id}, #{item}, date_add(curdate(), interval 90 day))</foreach>;</script>")
     void addAppsToTenant(@Param("id") Long id, @Param("list") List<Long> appIds);
 
     /**
@@ -184,6 +184,6 @@ public interface TenantMapper {
      * @param tenantId 租户ID
      * @param userId   用户ID
      */
-    @Insert("insert ibt_tenant_user(id, tenant_id, user_id) values (replace(uuid(), '-', ''), #{tenantId}, #{userId});")
+    @Insert("insert ibt_tenant_user(tenant_id, user_id) values (#{tenantId}, #{userId});")
     void addRelation(@Param("tenantId") Long tenantId, @Param("userId") Long userId);
 }
