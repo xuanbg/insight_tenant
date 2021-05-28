@@ -6,6 +6,7 @@ import com.insight.utils.Json;
 import com.insight.utils.ReplyHelper;
 import com.insight.utils.pojo.LoginInfo;
 import com.insight.utils.pojo.Reply;
+import com.insight.utils.pojo.SearchDto;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -34,14 +35,12 @@ public class TenantController {
     /**
      * 根据设定的条件查询租户信息(分页)
      *
-     * @param keyword 查询关键词
-     * @param page    分页页码
-     * @param size    每页记录数
+     * @param search 查询实体类
      * @return Reply
      */
     @GetMapping("/v1.0/tenants")
-    public Reply getTenants(@RequestParam(required = false) String keyword, @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "20") int size) {
-        return service.getTenants(keyword, page, size);
+    public Reply getTenants(SearchDto search) {
+        return service.getTenants(search);
     }
 
     /**
@@ -51,7 +50,7 @@ public class TenantController {
      * @return Reply
      */
     @GetMapping("/v1.0/tenants/{id}")
-    public Reply getTenant(@PathVariable String id) {
+    public Reply getTenant(@PathVariable Long id) {
         return service.getTenant(id);
     }
 
@@ -62,21 +61,22 @@ public class TenantController {
      * @return Reply
      */
     @GetMapping("/v1.0/tenants/{id}/apps")
-    public Reply getTenantApps(@PathVariable String id) {
+    public Reply getTenantApps(@PathVariable Long id) {
         return service.getTenantApps(id);
     }
 
     /**
      * 获取指定ID的租户的用户集合
      *
-     * @param id   租户ID
-     * @param page 分页页码
-     * @param size 每页记录数
+     * @param id     租户ID
+     * @param search 查询实体类
      * @return Reply
      */
     @GetMapping("/v1.0/tenants/{id}/users")
-    public Reply getTenantUsers(@PathVariable String id, @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "20") int size) {
-        return service.getTenantUsers(id, page, size);
+    public Reply getTenantUsers(@PathVariable Long id, SearchDto search) {
+        search.setTenantId(id);
+
+        return service.getTenantUsers(search);
     }
 
     /**
@@ -129,7 +129,7 @@ public class TenantController {
      * @return Reply
      */
     @PutMapping("/v1.0/tenants/disable")
-    public Reply disableTenant(@RequestHeader("loginInfo") String info, @RequestBody String id) {
+    public Reply disableTenant(@RequestHeader("loginInfo") String info, @RequestBody Long id) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
         return service.updateTenantStatus(loginInfo, id, true);
@@ -143,7 +143,7 @@ public class TenantController {
      * @return Reply
      */
     @PutMapping("/v1.0/tenants/enable")
-    public Reply enableTenant(@RequestHeader("loginInfo") String info, @RequestBody String id) {
+    public Reply enableTenant(@RequestHeader("loginInfo") String info, @RequestBody Long id) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
         return service.updateTenantStatus(loginInfo, id, false);
@@ -157,7 +157,7 @@ public class TenantController {
      * @return Reply
      */
     @DeleteMapping("/v1.0/tenants")
-    public Reply deleteTenant(@RequestHeader("loginInfo") String info, @RequestBody String id) {
+    public Reply deleteTenant(@RequestHeader("loginInfo") String info, @RequestBody Long id) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
         return service.deleteTenant(loginInfo, id);
@@ -170,7 +170,7 @@ public class TenantController {
      * @return Reply
      */
     @GetMapping("/v1.0/tenants/{id}/unbounds")
-    public Reply getUnboundApps(@PathVariable String id) {
+    public Reply getUnboundApps(@PathVariable Long id) {
         return service.getUnboundApps(id);
     }
 
@@ -183,7 +183,7 @@ public class TenantController {
      * @return Reply
      */
     @PostMapping("/v1.0/tenants/{id}/apps")
-    public Reply addAppsToTenant(@RequestHeader("loginInfo") String info, @PathVariable String id, @RequestBody List<String> appIds) {
+    public Reply addAppsToTenant(@RequestHeader("loginInfo") String info, @PathVariable Long id, @RequestBody List<Long> appIds) {
         if (appIds == null || appIds.isEmpty()) {
             return ReplyHelper.invalidParam("请选择需要绑定的应用");
         }
@@ -201,7 +201,7 @@ public class TenantController {
      * @return Reply
      */
     @DeleteMapping("/v1.0/tenants/{id}/apps")
-    public Reply removeAppsFromTenant(@RequestHeader("loginInfo") String info, @PathVariable String id, @RequestBody List<String> appIds) {
+    public Reply removeAppsFromTenant(@RequestHeader("loginInfo") String info, @PathVariable Long id, @RequestBody List<Long> appIds) {
         if (appIds == null || appIds.isEmpty()) {
             return ReplyHelper.invalidParam("请选择需要解除绑定的应用");
         }
@@ -219,7 +219,7 @@ public class TenantController {
      * @return Reply
      */
     @PutMapping("/v1.0/tenants/{id}/apps")
-    public Reply rentTenantApp(@RequestHeader("loginInfo") String info, @PathVariable String id, @RequestBody TenantApp dto) {
+    public Reply rentTenantApp(@RequestHeader("loginInfo") String info, @PathVariable Long id, @RequestBody TenantApp dto) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
         dto.setTenantId(id);
 
@@ -229,14 +229,12 @@ public class TenantController {
     /**
      * 获取日志列表
      *
-     * @param keyword 查询关键词
-     * @param page    分页页码
-     * @param size    每页记录数
+     * @param search 查询实体类
      * @return Reply
      */
     @GetMapping("/v1.0/tenants/logs")
-    public Reply getTenantLogs(@RequestParam(required = false) String keyword, @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "20") int size) {
-        return service.getTenantLogs(keyword, page, size);
+    public Reply getTenantLogs(SearchDto search) {
+        return service.getTenantLogs(search);
     }
 
     /**
@@ -246,8 +244,8 @@ public class TenantController {
      * @return Reply
      */
     @GetMapping("/v1.0/tenants/logs/{id}")
-    Reply getTenantLog(@PathVariable String id) {
-        if (id == null || id.isEmpty()) {
+    Reply getTenantLog(@PathVariable Long id) {
+        if (id == null) {
             return ReplyHelper.invalidParam();
         }
 

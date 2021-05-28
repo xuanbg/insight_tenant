@@ -1,8 +1,7 @@
 package com.insight.base.tenant.common.dto;
 
-import com.insight.utils.Json;
+import com.insight.utils.pojo.BaseXo;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
@@ -10,18 +9,17 @@ import java.time.LocalDate;
  * @date 2019/12/4
  * @remark 租户绑定应用DTO
  */
-public class AppListDto implements Serializable {
-    private static final long serialVersionUID = -1L;
+public class AppListDto extends BaseXo {
 
     /**
      * 应用ID
      */
-    private String id;
+    private Long id;
 
     /**
      * 租户ID
      */
-    private String tenantId;
+    private Long tenantId;
 
     /**
      * 应用名称
@@ -48,19 +46,19 @@ public class AppListDto implements Serializable {
      */
     private LocalDate expireDate;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getTenantId() {
+    public Long getTenantId() {
         return tenantId;
     }
 
-    public void setTenantId(String tenantId) {
+    public void setTenantId(Long tenantId) {
         this.tenantId = tenantId;
     }
 
@@ -102,10 +100,5 @@ public class AppListDto implements Serializable {
 
     public void setExpireDate(LocalDate expireDate) {
         this.expireDate = expireDate;
-    }
-
-    @Override
-    public String toString() {
-        return Json.toJson(this);
     }
 }

@@ -36,7 +36,7 @@ public class Core {
      * @param appId    应用ID
      * @param members  角色成员集合
      */
-    public void addRole(LoginInfo info, String tenantId, String appId, List<MemberDto> members) {
+    public void addRole(LoginInfo info, Long tenantId, Long appId, List<MemberDto> members) {
         RoleDto role = new RoleDto();
         role.setTenantId(tenantId);
         role.setAppId(appId);

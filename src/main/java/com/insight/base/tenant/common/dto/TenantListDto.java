@@ -1,22 +1,19 @@
 package com.insight.base.tenant.common.dto;
 
 import com.insight.base.tenant.common.entity.CompanyInfo;
-import com.insight.utils.Json;
-
-import java.io.Serializable;
+import com.insight.utils.pojo.BaseXo;
 
 /**
  * @author 宣炳刚
  * @date 2019/05/20
  * @remark 租户查询对象实体
  */
-public class TenantListDto implements Serializable {
-    private static final long serialVersionUID = -1L;
+public class TenantListDto extends BaseXo {
 
     /**
      * UUID主键
      */
-    private String id;
+    private Long id;
 
     /**
      * 租户编码
@@ -53,11 +50,11 @@ public class TenantListDto implements Serializable {
      */
     private Boolean isInvalid;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -115,10 +112,5 @@ public class TenantListDto implements Serializable {
 
     public void setInvalid(Boolean invalid) {
         this.isInvalid = invalid;
-    }
-
-    @Override
-    public String toString() {
-        return Json.toJson(this);
     }
 }

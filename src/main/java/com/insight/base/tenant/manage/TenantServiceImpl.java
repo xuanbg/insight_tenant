@@ -15,6 +15,7 @@ import com.insight.base.tenant.common.entity.TenantApp;
 import com.insight.base.tenant.common.mapper.TenantMapper;
 import com.insight.utils.Redis;
 import com.insight.utils.ReplyHelper;
+import com.insight.utils.SnowflakeCreator;
 import com.insight.utils.Util;
 import com.insight.utils.pojo.*;
 import org.slf4j.Logger;
@@ -35,6 +36,7 @@ import java.util.List;
 @Service
 public class TenantServiceImpl implements TenantService {
     private static final String BUSINESS = "租户管理";
+    private final SnowflakeCreator creator;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final Core core;
     private final LogServiceClient client;
@@ -43,11 +45,13 @@ public class TenantServiceImpl implements TenantService {
     /**
      * 构造方法
      *
-     * @param core   Core
-     * @param client LogServiceClient
-     * @param mapper TenantMapper
+     * @param creator 雪花算法ID生成器
+     * @param core    Core
+     * @param client  LogServiceClient
+     * @param mapper  TenantMapper
      */
-    public TenantServiceImpl(Core core, LogServiceClient client, TenantMapper mapper) {
+    public TenantServiceImpl(SnowflakeCreator creator, Core core, LogServiceClient client, TenantMapper mapper) {
+        this.creator = creator;
         this.core = core;
         this.client = client;
         this.mapper = mapper;
@@ -56,15 +60,13 @@ public class TenantServiceImpl implements TenantService {
     /**
      * 根据设定的条件查询租户信息(分页)
      *
-     * @param keyword 查询关键词
-     * @param page    分页页码
-     * @param size    每页记录数
+     * @param search 查询实体类
      * @return Reply
      */
     @Override
-    public Reply getTenants(String keyword, int page, int size) {
-        PageHelper.startPage(page, size);
-        List<TenantListDto> tenants = mapper.getTenants(keyword);
+    public Reply getTenants(SearchDto search) {
+        PageHelper.startPage(search.getPage(), search.getSize());
+        List<TenantListDto> tenants = mapper.getTenants(search.getKeyword());
         PageInfo<TenantListDto> pageInfo = new PageInfo<>(tenants);
 
         return ReplyHelper.success(tenants, pageInfo.getTotal());
@@ -77,7 +79,7 @@ public class TenantServiceImpl implements TenantService {
      * @return Reply
      */
     @Override
-    public Reply getTenant(String id) {
+    public Reply getTenant(Long id) {
         Tenant tenant = mapper.getTenant(id);
         if (tenant == null) {
             return ReplyHelper.fail("ID不存在,未读取数据");
@@ -93,7 +95,7 @@ public class TenantServiceImpl implements TenantService {
      * @return Reply
      */
     @Override
-    public Reply getTenantApps(String id) {
+    public Reply getTenantApps(Long id) {
         List<AppListDto> list = mapper.getTenantApps(id);
 
         return ReplyHelper.success(list);
@@ -102,15 +104,13 @@ public class TenantServiceImpl implements TenantService {
     /**
      * 获取指定ID的租户的用户集合
      *
-     * @param tenantId 租户ID
-     * @param page     分页页码
-     * @param size     每页记录数
+     * @param search 查询实体类
      * @return Reply
      */
     @Override
-    public Reply getTenantUsers(String tenantId, int page, int size) {
-        PageHelper.startPage(page, size);
-        List<UserListDto> users = mapper.getTenantUsers(tenantId);
+    public Reply getTenantUsers(SearchDto search) {
+        PageHelper.startPage(search.getPage(), search.getSize());
+        List<UserListDto> users = mapper.getTenantUsers(search.getTenantId());
         PageInfo<UserListDto> pageInfo = new PageInfo<>(users);
 
         return ReplyHelper.success(users, pageInfo.getTotal());
@@ -131,7 +131,7 @@ public class TenantServiceImpl implements TenantService {
             return ReplyHelper.fail("简称「" + alias + "」已被使用,请使用其它简称");
         }
 
-        String id = Util.uuid();
+        Long id = creator.nextId(4);
         dto.setId(id);
         dto.setCode(core.getCode());
         dto.setCreator(info.getUserName());
@@ -153,7 +153,7 @@ public class TenantServiceImpl implements TenantService {
      */
     @Override
     public Reply updateTenant(LoginInfo info, Tenant dto) {
-        String id = dto.getId();
+        Long id = dto.getId();
         Tenant tenant = mapper.getTenant(id);
         if (tenant == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
@@ -175,7 +175,7 @@ public class TenantServiceImpl implements TenantService {
     @Override
     @Transactional
     public Reply auditTenant(LoginInfo info, Tenant dto) {
-        String id = dto.getId();
+        Long id = dto.getId();
         Tenant tenant = mapper.getTenant(id);
         if (tenant == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
@@ -197,8 +197,8 @@ public class TenantServiceImpl implements TenantService {
         }
 
         // 关联系统管理客户端应用
-        String appId = "e46c0d4f85f24f759ad4d86b9505b1d4";
-        List<String> appIds = new ArrayList<>();
+        Long appId = 134661270778413072L;
+        List<Long> appIds = new ArrayList<>();
         appIds.add(appId);
         mapper.addAppsToTenant(id, appIds);
 
@@ -216,7 +216,7 @@ public class TenantServiceImpl implements TenantService {
         RabbitClient.sendTopic("tenant.addOrganize", organize);
 
         // 创建租户系统管理员
-        String userId = Util.uuid();
+        Long userId = creator.nextId(3);
         mapper.addRelation(id, userId);
 
         User user = new User();
@@ -248,7 +248,7 @@ public class TenantServiceImpl implements TenantService {
      * @return Reply
      */
     @Override
-    public Reply updateTenantStatus(LoginInfo info, String id, boolean status) {
+    public Reply updateTenantStatus(LoginInfo info, Long id, boolean status) {
         Tenant tenant = mapper.getTenant(id);
         if (tenant == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
@@ -268,7 +268,7 @@ public class TenantServiceImpl implements TenantService {
      * @return Reply
      */
     @Override
-    public Reply deleteTenant(LoginInfo info, String id) {
+    public Reply deleteTenant(LoginInfo info, Long id) {
         Tenant tenant = mapper.getTenant(id);
         if (tenant == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
@@ -287,7 +287,7 @@ public class TenantServiceImpl implements TenantService {
      * @return Reply
      */
     @Override
-    public Reply getUnboundApps(String id) {
+    public Reply getUnboundApps(Long id) {
         List<AppListDto> list = mapper.getUnboundApps(id);
 
         return ReplyHelper.success(list);
@@ -302,7 +302,7 @@ public class TenantServiceImpl implements TenantService {
      * @return Reply
      */
     @Override
-    public Reply addAppsToTenant(LoginInfo info, String id, List<String> appIds) {
+    public Reply addAppsToTenant(LoginInfo info, Long id, List<Long> appIds) {
         Tenant tenant = mapper.getTenant(id);
         if (tenant == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
@@ -322,7 +322,7 @@ public class TenantServiceImpl implements TenantService {
         LogClient.writeLog(info, BUSINESS, OperateType.INSERT, id, appIds);
 
         // 为租户创建初始角色
-        for (String appId : appIds) {
+        for (Long appId : appIds) {
             core.addRole(info, id, appId, null);
         }
 
@@ -338,7 +338,7 @@ public class TenantServiceImpl implements TenantService {
      * @return Reply
      */
     @Override
-    public Reply removeAppsFromTenant(LoginInfo info, String id, List<String> appIds) {
+    public Reply removeAppsFromTenant(LoginInfo info, Long id, List<Long> appIds) {
         Tenant tenant = mapper.getTenant(id);
         if (tenant == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
@@ -364,7 +364,7 @@ public class TenantServiceImpl implements TenantService {
      */
     @Override
     public Reply rentTenantApp(LoginInfo info, TenantApp dto) {
-        String tenantId = dto.getTenantId();
+        Long tenantId = dto.getTenantId();
         Tenant tenant = mapper.getTenant(tenantId);
         if (tenant == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
@@ -381,7 +381,7 @@ public class TenantServiceImpl implements TenantService {
         // 更新缓存数据
         String key = "App:" + dto.getAppId();
         if (Redis.hasKey(key)) {
-            Redis.setHash(key, tenantId, dto.getExpireDate());
+            Redis.setHash(key, tenantId.toString(), dto.getExpireDate());
         }
 
         return ReplyHelper.success();
@@ -390,14 +390,12 @@ public class TenantServiceImpl implements TenantService {
     /**
      * 获取日志列表
      *
-     * @param keyword 查询关键词
-     * @param page    分页页码
-     * @param size    每页记录数
+     * @param search 查询实体类
      * @return Reply
      */
     @Override
-    public Reply getTenantLogs(String keyword, int page, int size) {
-        return client.getLogs(BUSINESS, keyword, page, size);
+    public Reply getTenantLogs(SearchDto search) {
+        return client.getLogs(BUSINESS, search.getKeyword(), search.getPage(), search.getSize());
     }
 
     /**
@@ -407,7 +405,7 @@ public class TenantServiceImpl implements TenantService {
      * @return Reply
      */
     @Override
-    public Reply getTenantLog(String id) {
+    public Reply getTenantLog(Long id) {
         return client.getLog(id);
     }
 }

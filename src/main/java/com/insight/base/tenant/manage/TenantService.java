@@ -4,6 +4,7 @@ import com.insight.base.tenant.common.entity.Tenant;
 import com.insight.base.tenant.common.entity.TenantApp;
 import com.insight.utils.pojo.LoginInfo;
 import com.insight.utils.pojo.Reply;
+import com.insight.utils.pojo.SearchDto;
 
 import java.util.List;
 
@@ -17,12 +18,10 @@ public interface TenantService {
     /**
      * 根据设定的条件查询租户信息(分页)
      *
-     * @param keyword 查询关键词
-     * @param page    分页页码
-     * @param size    每页记录数
+     * @param search 查询实体类
      * @return Reply
      */
-    Reply getTenants(String keyword, int page, int size);
+    Reply getTenants(SearchDto search);
 
     /**
      * 查询指定ID的租户信息
@@ -30,7 +29,7 @@ public interface TenantService {
      * @param id 租户ID
      * @return Reply
      */
-    Reply getTenant(String id);
+    Reply getTenant(Long id);
 
     /**
      * 查询指定ID的租户绑定的应用集合
@@ -38,17 +37,15 @@ public interface TenantService {
      * @param id 租户ID
      * @return Reply
      */
-    Reply getTenantApps(String id);
+    Reply getTenantApps(Long id);
 
     /**
      * 获取指定ID的租户的用户集合
      *
-     * @param tenantId 租户ID
-     * @param page     分页页码
-     * @param size     每页记录数
+     * @param search 查询实体类
      * @return Reply
      */
-    Reply getTenantUsers(String tenantId, int page, int size);
+    Reply getTenantUsers(SearchDto search);
 
     /**
      * 新增租户
@@ -85,7 +82,7 @@ public interface TenantService {
      * @param status 禁用/启用状态
      * @return Reply
      */
-    Reply updateTenantStatus(LoginInfo info, String id, boolean status);
+    Reply updateTenantStatus(LoginInfo info, Long id, boolean status);
 
     /**
      * 删除指定ID的租户
@@ -94,7 +91,7 @@ public interface TenantService {
      * @param id   租户ID
      * @return Reply
      */
-    Reply deleteTenant(LoginInfo info, String id);
+    Reply deleteTenant(LoginInfo info, Long id);
 
     /**
      * 获取租户可用应用集合
@@ -102,7 +99,7 @@ public interface TenantService {
      * @param id 租户ID
      * @return Reply
      */
-    Reply getUnboundApps(String id);
+    Reply getUnboundApps(Long id);
 
     /**
      * 设置应用与指定ID的租户的绑定关系
@@ -112,7 +109,7 @@ public interface TenantService {
      * @param appIds 应用ID集合
      * @return Reply
      */
-    Reply addAppsToTenant(LoginInfo info, String id, List<String> appIds);
+    Reply addAppsToTenant(LoginInfo info, Long id, List<Long> appIds);
 
     /**
      * 解除应用与指定ID的租户的绑定关系
@@ -122,7 +119,7 @@ public interface TenantService {
      * @param appIds 应用ID集合
      * @return Reply
      */
-    Reply removeAppsFromTenant(LoginInfo info, String id, List<String> appIds);
+    Reply removeAppsFromTenant(LoginInfo info, Long id, List<Long> appIds);
 
     /**
      * 续租应用
@@ -136,12 +133,10 @@ public interface TenantService {
     /**
      * 获取日志列表
      *
-     * @param keyword 查询关键词
-     * @param page    分页页码
-     * @param size    每页记录数
+     * @param search 查询实体类
      * @return Reply
      */
-    Reply getTenantLogs(String keyword, int page, int size);
+    Reply getTenantLogs(SearchDto search);
 
     /**
      * 获取日志详情
@@ -149,5 +144,5 @@ public interface TenantService {
      * @param id 日志ID
      * @return Reply
      */
-    Reply getTenantLog(String id);
+    Reply getTenantLog(Long id);
 }

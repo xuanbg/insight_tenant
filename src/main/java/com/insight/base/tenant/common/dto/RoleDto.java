@@ -1,9 +1,8 @@
 package com.insight.base.tenant.common.dto;
 
-import com.insight.utils.Json;
+import com.insight.utils.pojo.BaseXo;
 import com.insight.utils.pojo.MemberDto;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -11,18 +10,17 @@ import java.util.List;
  * @date 2019/12/4
  * @remark 角色实体类
  */
-public class RoleDto implements Serializable {
-    private static final long serialVersionUID = -1L;
+public class RoleDto extends BaseXo {
 
     /**
      * 租户ID
      */
-    private String tenantId;
+    private Long tenantId;
 
     /**
      * 应用ID
      */
-    private String appId;
+    private Long appId;
 
     /**
      * 角色成员
@@ -37,21 +35,21 @@ public class RoleDto implements Serializable {
     /**
      * 创建人ID
      */
-    private String creatorId;
+    private Long creatorId;
 
-    public String getTenantId() {
+    public Long getTenantId() {
         return tenantId;
     }
 
-    public void setTenantId(String tenantId) {
+    public void setTenantId(Long tenantId) {
         this.tenantId = tenantId;
     }
 
-    public String getAppId() {
+    public Long getAppId() {
         return appId;
     }
 
-    public void setAppId(String appId) {
+    public void setAppId(Long appId) {
         this.appId = appId;
     }
 
@@ -71,16 +69,11 @@ public class RoleDto implements Serializable {
         this.creator = creator;
     }
 
-    public String getCreatorId() {
+    public Long getCreatorId() {
         return creatorId;
     }
 
-    public void setCreatorId(String creatorId) {
+    public void setCreatorId(Long creatorId) {
         this.creatorId = creatorId;
-    }
-
-    @Override
-    public String toString() {
-        return Json.toJson(this);
     }
 }

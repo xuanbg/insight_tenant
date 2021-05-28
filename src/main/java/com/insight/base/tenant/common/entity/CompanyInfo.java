@@ -1,14 +1,13 @@
 package com.insight.base.tenant.common.entity;
 
-import java.io.Serializable;
+import com.insight.utils.pojo.BaseXo;
 
 /**
  * @author 宣炳刚
  * @date 2019/05/20
  * @remark 租户企业信息实体类
  */
-public class CompanyInfo implements Serializable {
-    private static final long serialVersionUID = -1L;
+public class CompanyInfo extends BaseXo {
 
     /**
      * 公司名称
