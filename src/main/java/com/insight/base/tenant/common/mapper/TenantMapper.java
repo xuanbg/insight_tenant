@@ -22,10 +22,10 @@ public interface TenantMapper {
     /**
      * 根据登录账号查询用户数量
      *
-     * @param key 关键词(ID/账号/手机号/E-mail/微信unionId)
+     * @param key 关键词(账号/手机号/E-mail/微信unionId)
      * @return 用户数量
      */
-    @Select("select count(*) from ibu_user WHERE id = #{key} or account = #{key} or mobile = #{key} or email = #{key} or union_id = #{key} limit 1;")
+    @Select("select count(*) from ibu_user WHERE account = #{key} or mobile = #{key} or email = #{key} or union_id = #{key} limit 1;")
     int getUserCount(String key);
 
     /**
