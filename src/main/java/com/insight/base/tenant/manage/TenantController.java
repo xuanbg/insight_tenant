@@ -97,12 +97,14 @@ public class TenantController {
      * 更新租户数据
      *
      * @param info   用户关键信息
+     * @param id     租户ID
      * @param tenant 租户实体数据
      * @return Reply
      */
-    @PutMapping("/v1.0/tenants")
-    public Reply updateTenant(@RequestHeader("loginInfo") String info, @Valid @RequestBody Tenant tenant) {
+    @PutMapping("/v1.0/tenants/{id}")
+    public Reply updateTenant(@RequestHeader("loginInfo") String info, @PathVariable Long id, @Valid @RequestBody Tenant tenant) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
+        tenant.setId(id);
 
         return service.updateTenant(loginInfo, tenant);
     }
@@ -111,12 +113,14 @@ public class TenantController {
      * 审核租户
      *
      * @param info   用户关键信息
+     * @param id     租户ID
      * @param tenant 租户实体数据
      * @return Reply
      */
-    @PutMapping("/v1.0/tenants/status")
-    public Reply auditTenant(@RequestHeader("loginInfo") String info, @RequestBody Tenant tenant) {
+    @PutMapping("/v1.0/tenants/{id}/status")
+    public Reply auditTenant(@RequestHeader("loginInfo") String info, @PathVariable Long id, @RequestBody Tenant tenant) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
+        tenant.setId(id);
 
         return service.auditTenant(loginInfo, tenant);
     }
@@ -128,8 +132,8 @@ public class TenantController {
      * @param id   租户ID
      * @return Reply
      */
-    @PutMapping("/v1.0/tenants/disable")
-    public Reply disableTenant(@RequestHeader("loginInfo") String info, @RequestBody Long id) {
+    @PutMapping("/v1.0/tenants/{id}/disable")
+    public Reply disableTenant(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
         return service.updateTenantStatus(loginInfo, id, true);
@@ -142,8 +146,8 @@ public class TenantController {
      * @param id   租户ID
      * @return Reply
      */
-    @PutMapping("/v1.0/tenants/enable")
-    public Reply enableTenant(@RequestHeader("loginInfo") String info, @RequestBody Long id) {
+    @PutMapping("/v1.0/tenants/{id}/enable")
+    public Reply enableTenant(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
         return service.updateTenantStatus(loginInfo, id, false);
@@ -156,8 +160,8 @@ public class TenantController {
      * @param id   租户ID
      * @return Reply
      */
-    @DeleteMapping("/v1.0/tenants")
-    public Reply deleteTenant(@RequestHeader("loginInfo") String info, @RequestBody Long id) {
+    @DeleteMapping("/v1.0/tenants/{id}")
+    public Reply deleteTenant(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
         return service.deleteTenant(loginInfo, id);
@@ -245,10 +249,6 @@ public class TenantController {
      */
     @GetMapping("/v1.0/tenants/logs/{id}")
     Reply getTenantLog(@PathVariable Long id) {
-        if (id == null) {
-            return ReplyHelper.invalidParam();
-        }
-
         return service.getTenantLog(id);
     }
 }
