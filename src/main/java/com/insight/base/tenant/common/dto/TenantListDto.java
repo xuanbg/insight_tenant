@@ -1,7 +1,7 @@
 package com.insight.base.tenant.common.dto;
 
 import com.insight.base.tenant.common.entity.CompanyInfo;
-import com.insight.utils.pojo.BaseXo;
+import com.insight.utils.pojo.base.BaseXo;
 
 /**
  * @author 宣炳刚

@@ -1,15 +1,12 @@
 package com.insight.base.tenant.manage;
 
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.insight.base.tenant.common.Core;
 import com.insight.base.tenant.common.client.LogClient;
 import com.insight.base.tenant.common.client.LogServiceClient;
 import com.insight.base.tenant.common.client.RabbitClient;
 import com.insight.base.tenant.common.dto.AppListDto;
 import com.insight.base.tenant.common.dto.Organize;
-import com.insight.base.tenant.common.dto.TenantListDto;
-import com.insight.base.tenant.common.dto.UserListDto;
 import com.insight.base.tenant.common.entity.Tenant;
 import com.insight.base.tenant.common.entity.TenantApp;
 import com.insight.base.tenant.common.mapper.TenantMapper;
@@ -17,7 +14,12 @@ import com.insight.utils.Redis;
 import com.insight.utils.ReplyHelper;
 import com.insight.utils.SnowflakeCreator;
 import com.insight.utils.Util;
-import com.insight.utils.pojo.*;
+import com.insight.utils.pojo.OperateType;
+import com.insight.utils.pojo.auth.LoginInfo;
+import com.insight.utils.pojo.base.Reply;
+import com.insight.utils.pojo.base.Search;
+import com.insight.utils.pojo.user.MemberDto;
+import com.insight.utils.pojo.user.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -64,12 +66,12 @@ public class TenantServiceImpl implements TenantService {
      * @return Reply
      */
     @Override
-    public Reply getTenants(SearchDto search) {
-        PageHelper.startPage(search.getPage(), search.getSize());
-        List<TenantListDto> tenants = mapper.getTenants(search.getKeyword());
-        PageInfo<TenantListDto> pageInfo = new PageInfo<>(tenants);
+    public Reply getTenants(Search search) {
+        var page = PageHelper.startPage(search.getPageNum(), search.getPageSize())
+                .setOrderBy(search.getOrderBy()).doSelectPage(() -> mapper.getTenants(search));
 
-        return ReplyHelper.success(tenants, pageInfo.getTotal());
+        var total = page.getTotal();
+        return total > 0 ? ReplyHelper.success(page.getResult(), total) : ReplyHelper.resultIsEmpty();
     }
 
     /**
@@ -108,12 +110,12 @@ public class TenantServiceImpl implements TenantService {
      * @return Reply
      */
     @Override
-    public Reply getTenantUsers(SearchDto search) {
-        PageHelper.startPage(search.getPage(), search.getSize());
-        List<UserListDto> users = mapper.getTenantUsers(search.getTenantId());
-        PageInfo<UserListDto> pageInfo = new PageInfo<>(users);
+    public Reply getTenantUsers(Search search) {
+        var page = PageHelper.startPage(search.getPageNum(), search.getPageSize())
+                .setOrderBy(search.getOrderBy()).doSelectPage(() -> mapper.getTenantUsers(search));
 
-        return ReplyHelper.success(users, pageInfo.getTotal());
+        var total = page.getTotal();
+        return total > 0 ? ReplyHelper.success(page.getResult(), total) : ReplyHelper.resultIsEmpty();
     }
 
     /**
@@ -394,8 +396,8 @@ public class TenantServiceImpl implements TenantService {
      * @return Reply
      */
     @Override
-    public Reply getTenantLogs(SearchDto search) {
-        return client.getLogs(BUSINESS, search.getKeyword(), search.getPage(), search.getSize());
+    public Reply getTenantLogs(Search search) {
+        return client.getLogs(BUSINESS, search.getKeyword(), search.getPageNum(), search.getPageSize());
     }
 
     /**

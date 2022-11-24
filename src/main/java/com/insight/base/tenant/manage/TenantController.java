@@ -4,9 +4,9 @@ import com.insight.base.tenant.common.entity.Tenant;
 import com.insight.base.tenant.common.entity.TenantApp;
 import com.insight.utils.Json;
 import com.insight.utils.ReplyHelper;
-import com.insight.utils.pojo.LoginInfo;
-import com.insight.utils.pojo.Reply;
-import com.insight.utils.pojo.SearchDto;
+import com.insight.utils.pojo.auth.LoginInfo;
+import com.insight.utils.pojo.base.Reply;
+import com.insight.utils.pojo.base.Search;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -39,7 +39,7 @@ public class TenantController {
      * @return Reply
      */
     @GetMapping("/v1.0/tenants")
-    public Reply getTenants(SearchDto search) {
+    public Reply getTenants(Search search) {
         return service.getTenants(search);
     }
 
@@ -73,7 +73,7 @@ public class TenantController {
      * @return Reply
      */
     @GetMapping("/v1.0/tenants/{id}/users")
-    public Reply getTenantUsers(@PathVariable Long id, SearchDto search) {
+    public Reply getTenantUsers(@PathVariable Long id, Search search) {
         search.setTenantId(id);
 
         return service.getTenantUsers(search);
@@ -237,7 +237,7 @@ public class TenantController {
      * @return Reply
      */
     @GetMapping("/v1.0/tenants/logs")
-    public Reply getTenantLogs(SearchDto search) {
+    public Reply getTenantLogs(Search search) {
         return service.getTenantLogs(search);
     }
 

@@ -7,6 +7,7 @@ import com.insight.base.tenant.common.entity.CompanyInfo;
 import com.insight.base.tenant.common.entity.Tenant;
 import com.insight.base.tenant.common.entity.TenantApp;
 import com.insight.utils.common.JsonTypeHandler;
+import com.insight.utils.pojo.base.Search;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -31,14 +32,14 @@ public interface TenantMapper {
     /**
      * 获取租户列表
      *
-     * @param key 查询关键词
+     * @param search 查询关键词
      * @return 租户列表
      */
     @Results({@Result(property = "companyInfo", column = "company_info", javaType = CompanyInfo.class, typeHandler = JsonTypeHandler.class)})
     @Select("<script>select id, code, name, alias, company_info, remark, status, is_invalid from ibt_tenant " +
-            "<if test = 'key != null'>where code = #{key} or name like concat('%',#{key},'%') or alias = #{key} </if>" +
-            "order by created_time</script>")
-    List<TenantListDto> getTenants(@Param("key") String key);
+            "<if test = 'keyword != null'>where code = #{keyword} or name like concat('%',#{keyword},'%') or alias = #{keyword} </if>" +
+            "</script>")
+    List<TenantListDto> getTenants(Search search);
 
     /**
      * 获取租户详情
@@ -62,12 +63,12 @@ public interface TenantMapper {
     /**
      * 获取指定ID的租户的用户集合
      *
-     * @param tenantId 租户ID
+     * @param search 查询关键词
      * @return 用户集合
      */
     @Select("select u.id, u.code, u.name, u.account, u.mobile, u.remark, u.is_builtin, u.is_invalid " +
-            "from ibu_user u join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId} order by u.created_time")
-    List<UserListDto> getTenantUsers(Long tenantId);
+            "from ibu_user u join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId}")
+    List<UserListDto> getTenantUsers(Search search);
 
     /**
      * 获取指定编码的租户数量

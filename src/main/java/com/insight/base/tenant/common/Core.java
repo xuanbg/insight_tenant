@@ -4,8 +4,8 @@ import com.insight.base.tenant.common.client.RabbitClient;
 import com.insight.base.tenant.common.dto.RoleDto;
 import com.insight.base.tenant.common.mapper.TenantMapper;
 import com.insight.utils.Generator;
-import com.insight.utils.pojo.LoginInfo;
-import com.insight.utils.pojo.MemberDto;
+import com.insight.utils.pojo.auth.LoginInfo;
+import com.insight.utils.pojo.user.MemberDto;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

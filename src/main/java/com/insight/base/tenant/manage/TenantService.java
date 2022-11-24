@@ -2,9 +2,9 @@ package com.insight.base.tenant.manage;
 
 import com.insight.base.tenant.common.entity.Tenant;
 import com.insight.base.tenant.common.entity.TenantApp;
-import com.insight.utils.pojo.LoginInfo;
-import com.insight.utils.pojo.Reply;
-import com.insight.utils.pojo.SearchDto;
+import com.insight.utils.pojo.auth.LoginInfo;
+import com.insight.utils.pojo.base.Reply;
+import com.insight.utils.pojo.base.Search;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ public interface TenantService {
      * @param search 查询实体类
      * @return Reply
      */
-    Reply getTenants(SearchDto search);
+    Reply getTenants(Search search);
 
     /**
      * 查询指定ID的租户信息
@@ -45,7 +45,7 @@ public interface TenantService {
      * @param search 查询实体类
      * @return Reply
      */
-    Reply getTenantUsers(SearchDto search);
+    Reply getTenantUsers(Search search);
 
     /**
      * 新增租户
@@ -136,7 +136,7 @@ public interface TenantService {
      * @param search 查询实体类
      * @return Reply
      */
-    Reply getTenantLogs(SearchDto search);
+    Reply getTenantLogs(Search search);
 
     /**
      * 获取日志详情
