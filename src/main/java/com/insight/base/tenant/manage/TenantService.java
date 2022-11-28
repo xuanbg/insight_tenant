@@ -1,5 +1,6 @@
 package com.insight.base.tenant.manage;
 
+import com.insight.base.tenant.common.dto.AppListDto;
 import com.insight.base.tenant.common.entity.Tenant;
 import com.insight.base.tenant.common.entity.TenantApp;
 import com.insight.utils.pojo.auth.LoginInfo;
@@ -29,7 +30,7 @@ public interface TenantService {
      * @param id 租户ID
      * @return Reply
      */
-    Reply getTenant(Long id);
+    Tenant getTenant(Long id);
 
     /**
      * 查询指定ID的租户绑定的应用集合
@@ -37,7 +38,7 @@ public interface TenantService {
      * @param id 租户ID
      * @return Reply
      */
-    Reply getTenantApps(Long id);
+    List<AppListDto> getTenantApps(Long id);
 
     /**
      * 获取指定ID的租户的用户集合
@@ -54,25 +55,23 @@ public interface TenantService {
      * @param dto  租户实体数据
      * @return Reply
      */
-    Reply addTenant(LoginInfo info, Tenant dto);
+    Long addTenant(LoginInfo info, Tenant dto);
 
     /**
      * 更新租户数据
      *
      * @param info 用户关键信息
      * @param dto  租户实体数据
-     * @return Reply
      */
-    Reply updateTenant(LoginInfo info, Tenant dto);
+    void updateTenant(LoginInfo info, Tenant dto);
 
     /**
      * 审核租户
      *
      * @param info 用户关键信息
      * @param dto  租户实体数据
-     * @return Reply
      */
-    Reply auditTenant(LoginInfo info, Tenant dto);
+    void auditTenant(LoginInfo info, Tenant dto);
 
     /**
      * 启用、禁用租户信息
@@ -80,18 +79,16 @@ public interface TenantService {
      * @param info   用户信息
      * @param id     租户ID
      * @param status 禁用/启用状态
-     * @return Reply
      */
-    Reply updateTenantStatus(LoginInfo info, Long id, boolean status);
+    void updateTenantStatus(LoginInfo info, Long id, boolean status);
 
     /**
      * 删除指定ID的租户
      *
      * @param info 用户信息
      * @param id   租户ID
-     * @return Reply
      */
-    Reply deleteTenant(LoginInfo info, Long id);
+    void deleteTenant(LoginInfo info, Long id);
 
     /**
      * 获取租户可用应用集合
@@ -99,7 +96,7 @@ public interface TenantService {
      * @param id 租户ID
      * @return Reply
      */
-    Reply getUnboundApps(Long id);
+    List<AppListDto> getUnboundApps(Long id);
 
     /**
      * 设置应用与指定ID的租户的绑定关系
@@ -107,9 +104,8 @@ public interface TenantService {
      * @param info   用户信息
      * @param id     租户ID
      * @param appIds 应用ID集合
-     * @return Reply
      */
-    Reply addAppsToTenant(LoginInfo info, Long id, List<Long> appIds);
+    void addAppsToTenant(LoginInfo info, Long id, List<Long> appIds);
 
     /**
      * 解除应用与指定ID的租户的绑定关系
@@ -117,18 +113,16 @@ public interface TenantService {
      * @param info   用户信息
      * @param id     租户ID
      * @param appIds 应用ID集合
-     * @return Reply
      */
-    Reply removeAppsFromTenant(LoginInfo info, Long id, List<Long> appIds);
+    void removeAppsFromTenant(LoginInfo info, Long id, List<Long> appIds);
 
     /**
      * 续租应用
      *
      * @param info 用户信息
      * @param dto  租户应用实体数据
-     * @return Reply
      */
-    Reply rentTenantApp(LoginInfo info, TenantApp dto);
+    void rentTenantApp(LoginInfo info, TenantApp dto);
 
     /**
      * 获取日志列表

@@ -1,10 +1,11 @@
 package com.insight.base.tenant.manage;
 
+import com.insight.base.tenant.common.dto.AppListDto;
 import com.insight.base.tenant.common.entity.Tenant;
 import com.insight.base.tenant.common.entity.TenantApp;
 import com.insight.utils.Json;
-import com.insight.utils.ReplyHelper;
 import com.insight.utils.pojo.auth.LoginInfo;
+import com.insight.utils.pojo.base.BusinessException;
 import com.insight.utils.pojo.base.Reply;
 import com.insight.utils.pojo.base.Search;
 import org.springframework.web.bind.annotation.*;
@@ -50,7 +51,7 @@ public class TenantController {
      * @return Reply
      */
     @GetMapping("/v1.0/tenants/{id}")
-    public Reply getTenant(@PathVariable Long id) {
+    public Tenant getTenant(@PathVariable Long id) {
         return service.getTenant(id);
     }
 
@@ -61,7 +62,7 @@ public class TenantController {
      * @return Reply
      */
     @GetMapping("/v1.0/tenants/{id}/apps")
-    public Reply getTenantApps(@PathVariable Long id) {
+    public List<AppListDto> getTenantApps(@PathVariable Long id) {
         return service.getTenantApps(id);
     }
 
@@ -87,7 +88,7 @@ public class TenantController {
      * @return Reply
      */
     @PostMapping("/v1.0/tenants")
-    public Reply addTenant(@RequestHeader("loginInfo") String info, @Valid @RequestBody Tenant tenant) {
+    public Long addTenant(@RequestHeader("loginInfo") String info, @Valid @RequestBody Tenant tenant) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
         return service.addTenant(loginInfo, tenant);
@@ -99,14 +100,13 @@ public class TenantController {
      * @param info   用户关键信息
      * @param id     租户ID
      * @param tenant 租户实体数据
-     * @return Reply
      */
     @PutMapping("/v1.0/tenants/{id}")
-    public Reply updateTenant(@RequestHeader("loginInfo") String info, @PathVariable Long id, @Valid @RequestBody Tenant tenant) {
+    public void updateTenant(@RequestHeader("loginInfo") String info, @PathVariable Long id, @Valid @RequestBody Tenant tenant) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
         tenant.setId(id);
 
-        return service.updateTenant(loginInfo, tenant);
+        service.updateTenant(loginInfo, tenant);
     }
 
     /**
@@ -115,14 +115,13 @@ public class TenantController {
      * @param info   用户关键信息
      * @param id     租户ID
      * @param tenant 租户实体数据
-     * @return Reply
      */
     @PutMapping("/v1.0/tenants/{id}/status")
-    public Reply auditTenant(@RequestHeader("loginInfo") String info, @PathVariable Long id, @RequestBody Tenant tenant) {
+    public void auditTenant(@RequestHeader("loginInfo") String info, @PathVariable Long id, @RequestBody Tenant tenant) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
         tenant.setId(id);
 
-        return service.auditTenant(loginInfo, tenant);
+        service.auditTenant(loginInfo, tenant);
     }
 
     /**
@@ -130,13 +129,12 @@ public class TenantController {
      *
      * @param info 用户关键信息
      * @param id   租户ID
-     * @return Reply
      */
     @PutMapping("/v1.0/tenants/{id}/disable")
-    public Reply disableTenant(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
+    public void disableTenant(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
-        return service.updateTenantStatus(loginInfo, id, true);
+        service.updateTenantStatus(loginInfo, id, true);
     }
 
     /**
@@ -144,13 +142,12 @@ public class TenantController {
      *
      * @param info 用户关键信息
      * @param id   租户ID
-     * @return Reply
      */
     @PutMapping("/v1.0/tenants/{id}/enable")
-    public Reply enableTenant(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
+    public void enableTenant(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
-        return service.updateTenantStatus(loginInfo, id, false);
+        service.updateTenantStatus(loginInfo, id, false);
     }
 
     /**
@@ -158,13 +155,12 @@ public class TenantController {
      *
      * @param info 用户关键信息
      * @param id   租户ID
-     * @return Reply
      */
     @DeleteMapping("/v1.0/tenants/{id}")
-    public Reply deleteTenant(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
+    public void deleteTenant(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
-        return service.deleteTenant(loginInfo, id);
+        service.deleteTenant(loginInfo, id);
     }
 
     /**
@@ -174,7 +170,7 @@ public class TenantController {
      * @return Reply
      */
     @GetMapping("/v1.0/tenants/{id}/unbounds")
-    public Reply getUnboundApps(@PathVariable Long id) {
+    public List<AppListDto> getUnboundApps(@PathVariable Long id) {
         return service.getUnboundApps(id);
     }
 
@@ -184,16 +180,15 @@ public class TenantController {
      * @param info   用户关键信息
      * @param id     租户ID
      * @param appIds 应用ID集合
-     * @return Reply
      */
     @PostMapping("/v1.0/tenants/{id}/apps")
-    public Reply addAppsToTenant(@RequestHeader("loginInfo") String info, @PathVariable Long id, @RequestBody List<Long> appIds) {
+    public void addAppsToTenant(@RequestHeader("loginInfo") String info, @PathVariable Long id, @RequestBody List<Long> appIds) {
         if (appIds == null || appIds.isEmpty()) {
-            return ReplyHelper.invalidParam("请选择需要绑定的应用");
+            throw new BusinessException("请选择需要绑定的应用");
         }
 
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
-        return service.addAppsToTenant(loginInfo, id, appIds);
+        service.addAppsToTenant(loginInfo, id, appIds);
     }
 
     /**
@@ -202,16 +197,15 @@ public class TenantController {
      * @param info   用户关键信息
      * @param id     租户ID
      * @param appIds 应用ID集合
-     * @return Reply
      */
     @DeleteMapping("/v1.0/tenants/{id}/apps")
-    public Reply removeAppsFromTenant(@RequestHeader("loginInfo") String info, @PathVariable Long id, @RequestBody List<Long> appIds) {
+    public void removeAppsFromTenant(@RequestHeader("loginInfo") String info, @PathVariable Long id, @RequestBody List<Long> appIds) {
         if (appIds == null || appIds.isEmpty()) {
-            return ReplyHelper.invalidParam("请选择需要解除绑定的应用");
+            throw new BusinessException("请选择需要解除绑定的应用");
         }
 
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
-        return service.removeAppsFromTenant(loginInfo, id, appIds);
+        service.removeAppsFromTenant(loginInfo, id, appIds);
     }
 
     /**
@@ -220,14 +214,13 @@ public class TenantController {
      * @param info 用户关键信息
      * @param id   租户ID
      * @param dto  租户应用实体数据
-     * @return Reply
      */
     @PutMapping("/v1.0/tenants/{id}/apps")
-    public Reply rentTenantApp(@RequestHeader("loginInfo") String info, @PathVariable Long id, @RequestBody TenantApp dto) {
+    public void rentTenantApp(@RequestHeader("loginInfo") String info, @PathVariable Long id, @RequestBody TenantApp dto) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
         dto.setTenantId(id);
 
-        return service.rentTenantApp(loginInfo, dto);
+        service.rentTenantApp(loginInfo, dto);
     }
 
     /**
