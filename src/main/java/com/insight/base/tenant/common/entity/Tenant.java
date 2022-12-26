@@ -32,6 +32,11 @@ public class Tenant extends BaseXo {
     private String alias;
 
     /**
+     * 租户电信区号
+     */
+    private String areaCode;
+
+    /**
      * 企业信息
      */
     private CompanyInfo companyInfo;
@@ -111,6 +116,14 @@ public class Tenant extends BaseXo {
 
     public void setAlias(String alias) {
         this.alias = alias;
+    }
+
+    public String getAreaCode() {
+        return areaCode;
+    }
+
+    public void setAreaCode(String areaCode) {
+        this.areaCode = areaCode;
     }
 
     public CompanyInfo getCompanyInfo() {

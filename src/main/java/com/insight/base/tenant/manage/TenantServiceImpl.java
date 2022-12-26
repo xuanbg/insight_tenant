@@ -199,19 +199,6 @@ public class TenantServiceImpl implements TenantService {
         appIds.add(appId);
         mapper.addAppsToTenant(id, appIds);
 
-        // 创建组织
-        Organize organize = new Organize();
-        organize.setId(id);
-        organize.setTenantId(id);
-        organize.setType(0);
-        organize.setIndex(0);
-        organize.setName(tenant.getName());
-        organize.setAlias(tenant.getAlias());
-        organize.setFullName(tenant.getName());
-        organize.setCreator(info.getUserName());
-        organize.setCreatorId(info.getUserId());
-        RabbitClient.sendTopic("tenant.addOrganize", organize);
-
         // 创建租户系统管理员
         Long userId = creator.nextId(3);
         mapper.addRelation(id, userId);
@@ -224,6 +211,20 @@ public class TenantServiceImpl implements TenantService {
         user.setCreator(info.getUserName());
         user.setCreatorId(info.getUserId());
         RabbitClient.sendTopic("tenant.addUser", user);
+
+        // 创建组织
+        mapper.addOrgRelation(id, userId);
+        Organize organize = new Organize();
+        organize.setId(id);
+        organize.setTenantId(id);
+        organize.setType(0);
+        organize.setIndex(0);
+        organize.setName(tenant.getName());
+        organize.setAlias(tenant.getAlias());
+        organize.setFullName(tenant.getName());
+        organize.setCreator(info.getUserName());
+        organize.setCreatorId(info.getUserId());
+        RabbitClient.sendTopic("tenant.addOrganize", organize);
 
         // 创建租户系统管理员角色
         MemberDto member = new MemberDto();

@@ -84,8 +84,9 @@ public interface TenantMapper {
      *
      * @param tenant 租户DTO
      */
-    @Insert("insert ibt_tenant(id, code, name, alias, company_info, remark, creator, creator_id, created_time) values " +
-            "(#{id}, #{code}, #{name}, #{alias}, #{companyInfo, typeHandler = com.insight.utils.pojo.base.JsonTypeHandler}, #{remark}, #{creator}, #{creatorId}, #{createdTime});")
+    @Insert("insert ibt_tenant(id, code, name, alias, area_code, company_info, remark, creator, creator_id, created_time) values " +
+            "(#{id}, #{code}, #{name}, #{alias}, #{areaCode}, #{companyInfo, typeHandler = com.insight.utils.pojo.base.JsonTypeHandler}, " +
+            "#{remark}, #{creator}, #{creatorId}, #{createdTime});")
     void addTenant(Tenant tenant);
 
     /**
@@ -93,7 +94,8 @@ public interface TenantMapper {
      *
      * @param tenant 租户DTO
      */
-    @Update("update ibt_tenant set name = #{name}, alias = #{alias}, company_info = #{companyInfo, typeHandler = com.insight.utils.pojo.base.JsonTypeHandler}, remark = #{remark} where id = #{id};")
+    @Update("update ibt_tenant set name = #{name}, alias = #{alias}, area_code = #{areaCode}, " +
+            "company_info = #{companyInfo, typeHandler = com.insight.utils.pojo.base.JsonTypeHandler}, remark = #{remark} where id = #{id};")
     void editTenant(Tenant tenant);
 
     /**
@@ -187,4 +189,14 @@ public interface TenantMapper {
      */
     @Insert("insert ibt_tenant_user(tenant_id, user_id) values (#{tenantId}, #{userId});")
     void addRelation(@Param("tenantId") Long tenantId, @Param("userId") Long userId);
+
+
+    /**
+     * 新增组织机构-用户关系
+     *
+     * @param orgId  组织机构ID
+     * @param userId 用户ID
+     */
+    @Insert("insert ibo_organize_member(post_id, user_id) values (#{orgId}, #{userId});")
+    void addOrgRelation(Long orgId, Long userId);
 }
