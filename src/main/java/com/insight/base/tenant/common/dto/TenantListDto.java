@@ -48,7 +48,7 @@ public class TenantListDto extends BaseXo {
     /**
      * 是否失效：0、正常；1、失效
      */
-    private Boolean isInvalid;
+    private Boolean invalid;
 
     public Long getId() {
         return id;
@@ -107,10 +107,10 @@ public class TenantListDto extends BaseXo {
     }
 
     public Boolean getInvalid() {
-        return isInvalid;
+        return invalid;
     }
 
     public void setInvalid(Boolean invalid) {
-        this.isInvalid = invalid;
+        this.invalid = invalid;
     }
 }

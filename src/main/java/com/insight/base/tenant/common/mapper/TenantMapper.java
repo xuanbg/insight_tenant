@@ -36,7 +36,7 @@ public interface TenantMapper {
      * @return 租户列表
      */
     @Results({@Result(property = "companyInfo", column = "company_info", javaType = CompanyInfo.class, typeHandler = JsonTypeHandler.class)})
-    @Select("<script>select id, code, name, alias, company_info, remark, status, is_invalid from ibt_tenant " +
+    @Select("<script>select id, code, name, alias, company_info, remark, status, invalid from ibt_tenant " +
             "<if test = 'keyword != null'>where code = #{keyword} or name like concat('%',#{keyword},'%') or alias = #{keyword} </if>" +
             "</script>")
     List<TenantListDto> getTenants(Search search);
@@ -66,7 +66,7 @@ public interface TenantMapper {
      * @param search 查询关键词
      * @return 用户集合
      */
-    @Select("select u.id, u.code, u.name, u.account, u.mobile, u.remark, u.is_builtin, u.is_invalid " +
+    @Select("select u.id, u.code, u.name, u.account, u.mobile, u.remark, u.builtin, u.invalid " +
             "from ibu_user u join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId}")
     List<UserListDto> getTenantUsers(Search search);
 
@@ -134,7 +134,7 @@ public interface TenantMapper {
      * @param id     租户ID
      * @param status 禁用/启用状态
      */
-    @Update("update ibt_tenant set is_invalid = #{status} where id = #{id};")
+    @Update("update ibt_tenant set invalid = #{status} where id = #{id};")
     void changeTenantStatus(@Param("id") Long id, @Param("status") boolean status);
 
     /**

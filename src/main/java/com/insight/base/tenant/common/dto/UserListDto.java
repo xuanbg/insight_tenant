@@ -47,7 +47,7 @@ public class UserListDto extends BaseXo {
     /**
      * 用户是否失效
      */
-    private Boolean isInvalid;
+    private Boolean invalid;
 
     public Long getId() {
         return id;
@@ -106,10 +106,10 @@ public class UserListDto extends BaseXo {
     }
 
     public Boolean getInvalid() {
-        return isInvalid;
+        return invalid;
     }
 
     public void setInvalid(Boolean invalid) {
-        isInvalid = invalid;
+        this.invalid = invalid;
     }
 }
