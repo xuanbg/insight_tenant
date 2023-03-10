@@ -156,7 +156,7 @@ public interface TenantMapper {
      * @return 应用集合
      */
     @Select("select a.id, #{id} as tenant_id, a.name, a.alias, a.icon, a.domain, date_add(curdate(), interval 90 day) as expire_date from ibs_application a " +
-            "left join ibt_tenant_app r on r.app_id = a.id and r.tenant_id = #{id} where r.id is null;")
+            "left join ibt_tenant_app r on r.app_id = a.id and r.tenant_id = #{id} where a.id != 134660498556715024 and r.id is null;")
     List<AppListDto> getUnboundApps(Long id);
 
     /**
