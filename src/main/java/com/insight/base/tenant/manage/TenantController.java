@@ -10,7 +10,7 @@ import com.insight.utils.pojo.base.Reply;
 import com.insight.utils.pojo.base.Search;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.List;
 
 /**

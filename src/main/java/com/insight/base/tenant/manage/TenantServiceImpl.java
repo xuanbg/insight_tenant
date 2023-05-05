@@ -10,7 +10,6 @@ import com.insight.base.tenant.common.dto.Organize;
 import com.insight.base.tenant.common.entity.Tenant;
 import com.insight.base.tenant.common.entity.TenantApp;
 import com.insight.base.tenant.common.mapper.TenantMapper;
-import com.insight.utils.Redis;
 import com.insight.utils.ReplyHelper;
 import com.insight.utils.SnowflakeCreator;
 import com.insight.utils.Util;
@@ -21,6 +20,7 @@ import com.insight.utils.pojo.base.Search;
 import com.insight.utils.pojo.message.OperateType;
 import com.insight.utils.pojo.user.MemberDto;
 import com.insight.utils.pojo.user.User;
+import com.insight.utils.redis.Redis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -68,11 +68,11 @@ public class TenantServiceImpl implements TenantService {
      */
     @Override
     public Reply getTenants(Search search) {
-        var page = PageHelper.startPage(search.getPageNum(), search.getPageSize())
-                .setOrderBy(search.getOrderBy()).doSelectPage(() -> mapper.getTenants(search));
-
-        var total = page.getTotal();
-        return total > 0 ? ReplyHelper.success(page.getResult(), total) : ReplyHelper.resultIsEmpty();
+        try (var page = PageHelper.startPage(search.getPageNum(), search.getPageSize()).setOrderBy(search.getOrderBy())
+                .doSelectPage(() -> mapper.getTenants(search))) {
+            var total = page.getTotal();
+            return total > 0 ? ReplyHelper.success(page.getResult(), total) : ReplyHelper.resultIsEmpty();
+        }
     }
 
     /**
@@ -110,11 +110,11 @@ public class TenantServiceImpl implements TenantService {
      */
     @Override
     public Reply getTenantUsers(Search search) {
-        var page = PageHelper.startPage(search.getPageNum(), search.getPageSize())
-                .setOrderBy(search.getOrderBy()).doSelectPage(() -> mapper.getTenantUsers(search));
-
-        var total = page.getTotal();
-        return total > 0 ? ReplyHelper.success(page.getResult(), total) : ReplyHelper.resultIsEmpty();
+        try (var page = PageHelper.startPage(search.getPageNum(), search.getPageSize()).setOrderBy(search.getOrderBy())
+                .doSelectPage(() -> mapper.getTenantUsers(search))) {
+            var total = page.getTotal();
+            return total > 0 ? ReplyHelper.success(page.getResult(), total) : ReplyHelper.resultIsEmpty();
+        }
     }
 
     /**
@@ -135,8 +135,8 @@ public class TenantServiceImpl implements TenantService {
         Long id = creator.nextId(4);
         dto.setId(id);
         dto.setCode(core.getCode());
-        dto.setCreator(info.getUserName());
-        dto.setCreatorId(info.getUserId());
+        dto.setCreator(info.getName());
+        dto.setCreatorId(info.getId());
         dto.setCreatedTime(LocalDateTime.now());
 
         mapper.addTenant(dto);
@@ -208,8 +208,8 @@ public class TenantServiceImpl implements TenantService {
         user.setName("系统管理员");
         user.setAccount(tenant.getAlias());
         user.setPassword(Util.md5("123456"));
-        user.setCreator(info.getUserName());
-        user.setCreatorId(info.getUserId());
+        user.setCreator(info.getName());
+        user.setCreatorId(info.getId());
         RabbitClient.sendTopic("tenant.addUser", user);
 
         // 创建组织
@@ -222,8 +222,8 @@ public class TenantServiceImpl implements TenantService {
         organize.setName(tenant.getName());
         organize.setAlias(tenant.getAlias());
         organize.setFullName(tenant.getName());
-        organize.setCreator(info.getUserName());
-        organize.setCreatorId(info.getUserId());
+        organize.setCreator(info.getName());
+        organize.setCreatorId(info.getId());
         RabbitClient.sendTopic("tenant.addOrganize", organize);
 
         // 创建租户系统管理员角色
@@ -302,7 +302,7 @@ public class TenantServiceImpl implements TenantService {
         List<AppListDto> list = mapper.getTenantApps(id);
         list.forEach(i -> appIds.remove(i.getId()));
         if (appIds.isEmpty()) {
-            return ;
+            return;
         }
 
         mapper.addAppsToTenant(id, appIds);

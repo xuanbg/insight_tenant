@@ -3,7 +3,7 @@ package com.insight.base.tenant.common;
 import com.insight.base.tenant.common.client.RabbitClient;
 import com.insight.base.tenant.common.dto.RoleDto;
 import com.insight.base.tenant.common.mapper.TenantMapper;
-import com.insight.utils.Generator;
+import com.insight.utils.redis.Generator;
 import com.insight.utils.pojo.auth.LoginInfo;
 import com.insight.utils.pojo.user.MemberDto;
 import org.springframework.stereotype.Component;
@@ -41,8 +41,8 @@ public class Core {
         role.setTenantId(tenantId);
         role.setAppId(appId);
         role.setMembers(members);
-        role.setCreator(info.getUserName());
-        role.setCreatorId(info.getUserId());
+        role.setCreator(info.getName());
+        role.setCreatorId(info.getId());
 
         RabbitClient.sendTopic("tenant.addRole", role);
     }
