@@ -3,7 +3,6 @@ package com.insight.base.tenant.manage;
 import com.github.pagehelper.PageHelper;
 import com.insight.base.tenant.common.Core;
 import com.insight.base.tenant.common.client.LogClient;
-import com.insight.base.tenant.common.client.LogServiceClient;
 import com.insight.base.tenant.common.client.RabbitClient;
 import com.insight.base.tenant.common.dto.AppListDto;
 import com.insight.base.tenant.common.dto.Organize;
@@ -21,8 +20,6 @@ import com.insight.utils.pojo.message.OperateType;
 import com.insight.utils.pojo.user.MemberDto;
 import com.insight.utils.pojo.user.User;
 import com.insight.utils.redis.Redis;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,11 +35,9 @@ import java.util.List;
  */
 @Service
 public class TenantServiceImpl implements TenantService {
-    private static final String BUSINESS = "租户管理";
+    private static final String BUSINESS = "Tenant";
     private final SnowflakeCreator creator;
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final Core core;
-    private final LogServiceClient client;
     private final TenantMapper mapper;
 
     /**
@@ -50,13 +45,11 @@ public class TenantServiceImpl implements TenantService {
      *
      * @param creator 雪花算法ID生成器
      * @param core    Core
-     * @param client  LogServiceClient
      * @param mapper  TenantMapper
      */
-    public TenantServiceImpl(SnowflakeCreator creator, Core core, LogServiceClient client, TenantMapper mapper) {
+    public TenantServiceImpl(SnowflakeCreator creator, Core core, TenantMapper mapper) {
         this.creator = creator;
         this.core = core;
-        this.client = client;
         this.mapper = mapper;
     }
 
@@ -364,27 +357,5 @@ public class TenantServiceImpl implements TenantService {
         if (Redis.hasKey(key)) {
             Redis.setHash(key, tenantId.toString(), dto.getExpireDate());
         }
-    }
-
-    /**
-     * 获取日志列表
-     *
-     * @param search 查询实体类
-     * @return Reply
-     */
-    @Override
-    public Reply getTenantLogs(Search search) {
-        return client.getLogs(BUSINESS, search.getKeyword(), search.getPageNum(), search.getPageSize());
-    }
-
-    /**
-     * 获取日志详情
-     *
-     * @param id 日志ID
-     * @return Reply
-     */
-    @Override
-    public Reply getTenantLog(Long id) {
-        return client.getLog(id);
     }
 }

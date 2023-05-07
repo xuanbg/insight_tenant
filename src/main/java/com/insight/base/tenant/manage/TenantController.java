@@ -1,5 +1,6 @@
 package com.insight.base.tenant.manage;
 
+import com.insight.base.tenant.common.client.LogServiceClient;
 import com.insight.base.tenant.common.dto.AppListDto;
 import com.insight.base.tenant.common.entity.Tenant;
 import com.insight.base.tenant.common.entity.TenantApp;
@@ -8,9 +9,9 @@ import com.insight.utils.pojo.auth.LoginInfo;
 import com.insight.utils.pojo.base.BusinessException;
 import com.insight.utils.pojo.base.Reply;
 import com.insight.utils.pojo.base.Search;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
 import java.util.List;
 
 /**
@@ -22,14 +23,17 @@ import java.util.List;
 @RestController
 @RequestMapping("/base/tenant")
 public class TenantController {
+    private final LogServiceClient client;
     private final TenantService service;
 
     /**
      * 构造方法
      *
+     * @param client  Feign客户端
      * @param service 自动注入的TenantService
      */
-    public TenantController(TenantService service) {
+    public TenantController(LogServiceClient client, TenantService service) {
+        this.client = client;
         this.service = service;
     }
 
@@ -224,24 +228,28 @@ public class TenantController {
     }
 
     /**
-     * 获取日志列表
+     * 查询日志
      *
-     * @param search 查询实体类
-     * @return Reply
+     * @param loginInfo 用户登录信息
+     * @param search    查询条件
+     * @return 日志集合
      */
-    @GetMapping("/v1.0/tenants/logs")
-    public Reply getTenantLogs(Search search) {
-        return service.getTenantLogs(search);
+    @GetMapping("/v1.0/tenants/{id}/logs")
+    public Reply getAirportLogs(@RequestHeader("loginInfo") String loginInfo, @PathVariable Long id, Search search) {
+        var info = Json.toBeanFromBase64(loginInfo, LoginInfo.class);
+        return client.getLogs(id, "Tenant", search.getKeyword());
     }
 
     /**
-     * 获取日志详情
+     * 获取日志
      *
-     * @param id 日志ID
-     * @return Reply
+     * @param loginInfo 用户登录信息
+     * @param id        日志ID
+     * @return 日志VO
      */
     @GetMapping("/v1.0/tenants/logs/{id}")
-    Reply getTenantLog(@PathVariable Long id) {
-        return service.getTenantLog(id);
+    public Reply getAirportLog(@RequestHeader("loginInfo") String loginInfo, @PathVariable Long id) {
+        var info = Json.toBeanFromBase64(loginInfo, LoginInfo.class);
+        return client.getLog(id);
     }
 }

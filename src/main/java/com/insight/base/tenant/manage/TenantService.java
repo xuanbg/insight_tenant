@@ -123,20 +123,4 @@ public interface TenantService {
      * @param dto  租户应用实体数据
      */
     void rentTenantApp(LoginInfo info, TenantApp dto);
-
-    /**
-     * 获取日志列表
-     *
-     * @param search 查询实体类
-     * @return Reply
-     */
-    Reply getTenantLogs(Search search);
-
-    /**
-     * 获取日志详情
-     *
-     * @param id 日志ID
-     * @return Reply
-     */
-    Reply getTenantLog(Long id);
 }
