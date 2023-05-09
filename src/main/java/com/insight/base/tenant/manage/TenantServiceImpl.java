@@ -133,7 +133,7 @@ public class TenantServiceImpl implements TenantService {
         dto.setCreatedTime(LocalDateTime.now());
 
         mapper.addTenant(dto);
-        LogClient.writeLog(info, BUSINESS, OperateType.INSERT, id, dto);
+        LogClient.writeLog(info, BUSINESS, OperateType.NEW, id, dto);
 
         return id;
     }
@@ -153,7 +153,7 @@ public class TenantServiceImpl implements TenantService {
         }
 
         mapper.editTenant(dto);
-        LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, id, dto);
+        LogClient.writeLog(info, BUSINESS, OperateType.EDIT, id, dto);
     }
 
     /**
@@ -181,7 +181,7 @@ public class TenantServiceImpl implements TenantService {
         }
 
         mapper.auditTenant(id, status);
-        LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, id, dto);
+        LogClient.writeLog(info, BUSINESS, OperateType.EDIT, id, dto);
         if (status == 2) {
             return;
         }
@@ -243,7 +243,7 @@ public class TenantServiceImpl implements TenantService {
         }
 
         mapper.changeTenantStatus(id, status);
-        LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, id, tenant);
+        LogClient.writeLog(info, BUSINESS, OperateType.EDIT, id, tenant);
     }
 
     /**
@@ -260,7 +260,7 @@ public class TenantServiceImpl implements TenantService {
         }
 
         mapper.deleteTenant(id);
-        LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, id, tenant);
+        LogClient.writeLog(info, BUSINESS, OperateType.EDIT, id, tenant);
     }
 
     /**
@@ -299,7 +299,7 @@ public class TenantServiceImpl implements TenantService {
         }
 
         mapper.addAppsToTenant(id, appIds);
-        LogClient.writeLog(info, BUSINESS, OperateType.INSERT, id, appIds);
+        LogClient.writeLog(info, BUSINESS, OperateType.NEW, id, appIds);
 
         // 为租户创建初始角色
         for (Long appId : appIds) {
@@ -350,7 +350,7 @@ public class TenantServiceImpl implements TenantService {
         }
 
         mapper.rentTenant(dto);
-        LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, tenantId, dto);
+        LogClient.writeLog(info, BUSINESS, OperateType.EDIT, tenantId, dto);
 
         // 更新缓存数据
         String key = "App:" + dto.getAppId();
