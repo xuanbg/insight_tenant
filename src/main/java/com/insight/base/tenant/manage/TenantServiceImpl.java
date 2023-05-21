@@ -2,7 +2,6 @@ package com.insight.base.tenant.manage;
 
 import com.github.pagehelper.PageHelper;
 import com.insight.base.tenant.common.Core;
-import com.insight.base.tenant.common.client.LogClient;
 import com.insight.base.tenant.common.client.RabbitClient;
 import com.insight.base.tenant.common.dto.AppListDto;
 import com.insight.base.tenant.common.dto.Organize;
@@ -16,7 +15,6 @@ import com.insight.utils.pojo.auth.LoginInfo;
 import com.insight.utils.pojo.base.BusinessException;
 import com.insight.utils.pojo.base.Reply;
 import com.insight.utils.pojo.base.Search;
-import com.insight.utils.pojo.message.OperateType;
 import com.insight.utils.pojo.user.MemberDto;
 import com.insight.utils.pojo.user.User;
 import com.insight.utils.redis.Redis;
@@ -35,7 +33,6 @@ import java.util.List;
  */
 @Service
 public class TenantServiceImpl implements TenantService {
-    private static final String BUSINESS = "Tenant";
     private final SnowflakeCreator creator;
     private final Core core;
     private final TenantMapper mapper;
@@ -133,8 +130,6 @@ public class TenantServiceImpl implements TenantService {
         dto.setCreatedTime(LocalDateTime.now());
 
         mapper.addTenant(dto);
-        LogClient.writeLog(info, BUSINESS, OperateType.NEW, id, dto);
-
         return id;
     }
 
@@ -153,7 +148,6 @@ public class TenantServiceImpl implements TenantService {
         }
 
         mapper.editTenant(dto);
-        LogClient.writeLog(info, BUSINESS, OperateType.EDIT, id, dto);
     }
 
     /**
@@ -181,7 +175,6 @@ public class TenantServiceImpl implements TenantService {
         }
 
         mapper.auditTenant(id, status);
-        LogClient.writeLog(info, BUSINESS, OperateType.EDIT, id, dto);
         if (status == 2) {
             return;
         }
@@ -243,7 +236,6 @@ public class TenantServiceImpl implements TenantService {
         }
 
         mapper.changeTenantStatus(id, status);
-        LogClient.writeLog(info, BUSINESS, OperateType.EDIT, id, tenant);
     }
 
     /**
@@ -260,7 +252,6 @@ public class TenantServiceImpl implements TenantService {
         }
 
         mapper.deleteTenant(id);
-        LogClient.writeLog(info, BUSINESS, OperateType.EDIT, id, tenant);
     }
 
     /**
@@ -299,7 +290,6 @@ public class TenantServiceImpl implements TenantService {
         }
 
         mapper.addAppsToTenant(id, appIds);
-        LogClient.writeLog(info, BUSINESS, OperateType.NEW, id, appIds);
 
         // 为租户创建初始角色
         for (Long appId : appIds) {
@@ -327,7 +317,6 @@ public class TenantServiceImpl implements TenantService {
         }
 
         mapper.removeAppsFromTenant(id, appIds);
-        LogClient.writeLog(info, BUSINESS, OperateType.DELETE, id, appIds);
     }
 
     /**
@@ -350,7 +339,6 @@ public class TenantServiceImpl implements TenantService {
         }
 
         mapper.rentTenant(dto);
-        LogClient.writeLog(info, BUSINESS, OperateType.EDIT, tenantId, dto);
 
         // 更新缓存数据
         String key = "App:" + dto.getAppId();
