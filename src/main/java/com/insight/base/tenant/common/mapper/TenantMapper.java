@@ -39,8 +39,7 @@ public interface TenantMapper {
     @Select("""
             <script>select id, code, name, alias, company_info, remark, status, invalid
             from ibt_tenant
-            where id > 13
-              <if test = 'keyword != null'>and (code = #{keyword} or name like concat('%',#{keyword},'%') or alias = #{keyword})</if>
+            <if test = 'keyword != null'>where (code = #{keyword} or name like concat('%',#{keyword},'%') or alias = #{keyword})</if>
             </script>
             """)
     List<TenantListDto> getTenants(Search search);
